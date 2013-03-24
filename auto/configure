@@ -1,0 +1,8 @@
+#!/bin/sh
+
+SRC=src
+OBJ=build
+TARGET=$OBJ/wsgi
+MAKEFILE=Makefile
+
+. auto/make

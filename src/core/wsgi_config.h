@@ -1,0 +1,5 @@
+#ifndef _WSGI_CONFIG_H_INCLUDED_
+#define _WSGI_CONFIG_H_INCLUDED_
+
+
+#endif /* _WSGI_CONFIG_H_INCLUDED_ */

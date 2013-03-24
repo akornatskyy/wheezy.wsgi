@@ -1,0 +1,61 @@
+#!/bin/sh
+# vim: set noexpandtab
+
+mk_line() {
+    r=`echo "$1" | sed -e 's/\([^ ]*\)/  \1 \\\\/;0,/^../s///;$s/..$//'`
+    echo "$r"
+}
+
+
+find $SRC -type d | sed -e "s/$SRC/$OBJ/" | xargs mkdir -p
+
+
+core_dep=`find $SRC/core -name '*.h'`
+core_dep=$(mk_line "$core_dep")
+
+objects=`find $SRC -name '*.c'`
+objects=$(mk_line "$objects")
+objects=`echo "$objects" | sed -e "s/$SRC/$OBJ/;s/\.c/\.o/"`
+
+cat <<END > $MAKEFILE
+.PHONY: default clean
+.SILENT: clean
+
+CC = cc
+LINK = \$(CC)
+CFLAGS = -g -pipe -O -W -Wall -Wno-unused-parameter -Werror
+
+CORE_INC = -I $SRC/core
+CORE_DEP = $core_dep
+OBJECTS = $objects
+
+all: default
+
+default: $TARGET
+
+$TARGET: \$(OBJECTS)
+	@echo -n "linking... " ; \\
+	\$(LINK) \$(OBJECTS) -o $TARGET ; \\
+	echo "done."
+
+END
+
+
+source=`find $SRC/core -name '*.c' -exec echo {} \;`
+for s in $source
+do
+    o=`echo $s | sed -e "s/$SRC/$OBJ/;s/\.c/\.o/"`
+	n=`echo $s | sed 's/.*\///'`
+    cat <<END >> $MAKEFILE
+$o: $s \$(CORE_DEP)
+	@echo "\$(CC) $n" ; \\
+	\$(CC) \$(CFLAGS) \$(CORE_INC) -c $s -o \$@
+
+END
+done
+
+
+cat <<END >> $MAKEFILE
+clean:
+	rm -f $TARGET ; find $OBJ -name '*.o' -exec rm -f {} \;
+END
