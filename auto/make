@@ -30,6 +30,7 @@ CORE_DEP = $core_dep
 OBJECTS = $objects
 
 all: default
+	@echo > /dev/null
 
 default: $TARGET
 
