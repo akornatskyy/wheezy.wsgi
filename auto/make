@@ -10,10 +10,10 @@ mk_line() {
 find $SRC -type d | sed -e "s/$SRC/$OBJ/" | xargs mkdir -p
 
 
-core_dep=`find $SRC/core -name '*.h'`
+core_dep=`find $SRC/core -name '*.h' | sort`
 core_dep=$(mk_line "$core_dep")
 
-objects=`find $SRC -name '*.c'`
+objects=`find $SRC -name '*.c' | sort`
 objects=$(mk_line "$objects")
 objects=`echo "$objects" | sed -e "s/$SRC/$OBJ/;s/\.c/\.o/"`
 
@@ -42,7 +42,7 @@ $TARGET: \$(OBJECTS)
 END
 
 
-source=`find $SRC/core -name '*.c' -exec echo {} \;`
+source=`find $SRC/core -name '*.c' | sort`
 for s in $source
 do
     o=`echo $s | sed -e "s/$SRC/$OBJ/;s/\.c/\.o/"`
