@@ -2,10 +2,9 @@
 #include <wsgi_core.h>
 
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-    uint_t i;
+    u_int i;
     wsgi_log_t *log;
 
     log = wsgi_log_init();

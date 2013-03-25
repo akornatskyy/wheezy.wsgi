@@ -15,18 +15,19 @@
 #define WSGI_MAX_MSG            128
 
 
-typedef void (*wsgi_log_handler_pt) (wsgi_log_t *log, char *msg, size_t size);
+typedef void (*wsgi_log_handler_pt) (const wsgi_log_t *log,
+                                     const char *msg, size_t size);
 struct wsgi_log_s {
-    uint_t                  log_level;
-    uint_t                  log_source;
+    u_int                   log_level;
+    u_int                   log_source;
     wsgi_log_handler_pt     handler;
 };
 
 
-wsgi_log_t* wsgi_log_init();
-void wsgi_log_msg(wsgi_log_t* log, uint_t level, uint_t source,
+wsgi_log_t *wsgi_log_init();
+void wsgi_log_msg(const wsgi_log_t *log, u_int level, u_int source,
                   const char *fmt, ...);
-void wsgi_log_set_source(uint_t source, const char *name);
+void wsgi_log_set_source(u_int source, const char *name);
 
 
 #define wsgi_log_emerg(log, ...) \
@@ -40,7 +41,7 @@ void wsgi_log_set_source(uint_t source, const char *name);
     if (log->log_level >= WSGI_LOG_INFO && log->log_source & source) \
         wsgi_log_msg(log, WSGI_LOG_INFO, source, __VA_ARGS__)
 
-#if (WSGI_DEBUG)
+#if WSGI_DEBUG
 
 #define wsgi_log_debug(log, source, ...) \
     if (log->log_level == WSGI_LOG_DEBUG && log->log_source & source) \

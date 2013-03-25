@@ -5,7 +5,7 @@
 typedef struct wsgi_log_s wsgi_log_t;
 
 
-#define WSGI_LOG_SOURCE_CORE    (uint_t)1
+#define WSGI_LOG_SOURCE_CORE    1
 
 
 #include <wsgi_log.h>

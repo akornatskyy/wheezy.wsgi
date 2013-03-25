@@ -3,25 +3,25 @@
 #include <wsgi_core.h>
 
 
-static char* log_level[] = {
+static const char *log_level[] = {
     "[EMERG]",
     "[ERROR]",
     "[INFO]",
     "[DEBUG]"
 };
 
-static const char* log_source[WSGI_LOG_MAX_SOURCE + 1];
+static const char *log_source[WSGI_LOG_MAX_SOURCE + 1];
 
 static wsgi_log_t log;
 
 
-static void wsgi_printf_log_handler(wsgi_log_t *log, char *msg, size_t size);
+static void wsgi_printf_log_handler(const wsgi_log_t *log,
+                                    const char *msg, size_t size);
 
 
-wsgi_log_t*
-wsgi_log_init()
+wsgi_log_t *wsgi_log_init()
 {
-    uint_t i;
+    u_int i;
     for(i = 1; i < WSGI_LOG_MAX_SOURCE; i++) {
         log_source[i] = "undefined";
     }
@@ -33,9 +33,8 @@ wsgi_log_init()
 }
 
 
-void
-wsgi_log_msg(wsgi_log_t* log, uint_t level, uint_t source,
-             const char *fmt, ...)
+void wsgi_log_msg(const wsgi_log_t *log, u_int level, u_int source,
+                  const char *fmt, ...)
 {
     va_list args;
     char msg[WSGI_MAX_MSG];
@@ -51,7 +50,7 @@ wsgi_log_msg(wsgi_log_t* log, uint_t level, uint_t source,
     s = WSGI_MAX_MSG - 19;
 
     n = snprintf(p, s, ",%d %s %s: ",
-                 (uint_t)(tp.tv_usec / 1000),
+                 (u_int)(tp.tv_usec / 1000),
                  log_level[level],
                  log_source[source]);
 
@@ -67,15 +66,14 @@ wsgi_log_msg(wsgi_log_t* log, uint_t level, uint_t source,
 }
 
 
-void
-wsgi_printf_log_handler(wsgi_log_t *log, char *msg, size_t size)
+void wsgi_printf_log_handler(const wsgi_log_t *log, const char *msg,
+                             size_t size)
 {
     printf(msg);
 }
 
 
-void
-wsgi_log_set_source(uint_t source, const char *name)
+void wsgi_log_set_source(u_int source, const char *name)
 {
     assert(source > 0 && source < WSGI_LOG_MAX_SOURCE);
     log_source[source] = name;
