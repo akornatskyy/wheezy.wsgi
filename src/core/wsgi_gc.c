@@ -5,7 +5,7 @@
 static void *wsgi_gc_alloc_block(wsgi_gc_t *h, size_t size);
 
 
-wsgi_gc_t *wsgi_create_gc(size_t size, const wsgi_log_t *log)
+wsgi_gc_t *wsgi_gc_create(size_t size, const wsgi_log_t *log)
 {
     wsgi_gc_t *gc;
 
@@ -30,7 +30,7 @@ wsgi_gc_t *wsgi_create_gc(size_t size, const wsgi_log_t *log)
 }
 
 
-void wsgi_destroy_gc(wsgi_gc_t *gc)
+void wsgi_gc_destroy(wsgi_gc_t *gc)
 {
     wsgi_gc_block_t *b, *n;
 #if WSGI_DEBUG
@@ -49,7 +49,7 @@ void wsgi_destroy_gc(wsgi_gc_t *gc)
 }
 
 
-void wsgi_reset_gc(wsgi_gc_t *gc)
+void wsgi_gc_reset(wsgi_gc_t *gc)
 {
     wsgi_gc_block_t *b;
 

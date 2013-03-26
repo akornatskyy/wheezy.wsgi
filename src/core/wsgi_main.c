@@ -14,14 +14,15 @@ int main(int argc, char *argv[])
     wsgi_log_set_source(WSGI_LOG_SOURCE_GC, "gc");
     wsgi_log_set_source(WSGI_LOG_SOURCE_CORE, "core");
 
-    gc = wsgi_create_gc(512, log);
+    gc = wsgi_gc_create(512, log);
+
     wsgi_gc_malloc(gc, 1024);
     wsgi_gc_malloc(gc, 485);
     wsgi_gc_malloc(gc, 10);
     wsgi_gc_malloc(gc, 485);
 
-    wsgi_reset_gc(gc);
-    wsgi_destroy_gc(gc);
+    wsgi_gc_reset(gc);
+    wsgi_gc_destroy(gc);
 
     return 0;
 }
