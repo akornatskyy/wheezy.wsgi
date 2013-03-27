@@ -67,7 +67,7 @@ void wsgi_gc_reset(wsgi_gc_t *gc)
         wsgi_log_debug(gc->log, WSGI_LOG_SOURCE_GC,
                        "reset: %p > %p, fails: %d, freed: %d",
                        gc, b, b->fails, gc->block_size - b->left);
-        b->current = (u_chari *) b + sizeof(wsgi_gc_block_t);
+        b->current = (u_char *) b + sizeof(wsgi_gc_block_t);
         b->left = gc->block_size;
         b->fails = 0;
     }
@@ -127,11 +127,17 @@ static void *wsgi_gc_alloc_block(wsgi_gc_t *gc, size_t size)
     b->fails = 0;
     b->next = NULL;
 
-    c = gc->current;
-    for (l = c; l->next; l = l->next) {
+    l = c = gc->current;
+    while (1) {
         if (c->fails++ > 2) {
             c = l->next;
         }
+
+        if (l->next == NULL) {
+            break;
+        }
+
+        l = l->next;
     }
 
     l->next = b;
