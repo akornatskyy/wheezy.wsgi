@@ -14,14 +14,14 @@ wsgi_gc_t *wsgi_gc_create(size_t size, const wsgi_log_t *log)
         return NULL;
     }
 
-    gc->b.current = (u_char *)gc + sizeof(wsgi_gc_t);
+    gc->b.current = (u_char *) gc + sizeof(wsgi_gc_t);
     gc->b.left = size - sizeof(wsgi_gc_t);
     gc->b.fails = 0;
     gc->b.next = NULL;
 
     gc->block_size = size - sizeof(wsgi_gc_block_t);
     gc->log = log;
-    gc->current = (wsgi_gc_block_t *)gc;
+    gc->current = (wsgi_gc_block_t *) gc;
 
     wsgi_log_debug(log, WSGI_LOG_SOURCE_GC,
                    "create: %p, left:%d",
@@ -58,7 +58,7 @@ void wsgi_gc_reset(wsgi_gc_t *gc)
                    "reset: %p, fails: %d, freed: %d",
                    b, b->fails, gc->block_size - b->left);
 
-    b->current = (u_char*)b + sizeof(wsgi_gc_t);
+    b->current = (u_char *) b + sizeof(wsgi_gc_t);
     b->left = gc->block_size - sizeof(wsgi_gc_t) + sizeof(wsgi_gc_block_t);
     b->fails = 0;
 
@@ -67,7 +67,7 @@ void wsgi_gc_reset(wsgi_gc_t *gc)
         wsgi_log_debug(gc->log, WSGI_LOG_SOURCE_GC,
                        "reset: %p > %p, fails: %d, freed: %d",
                        gc, b, b->fails, gc->block_size - b->left);
-        b->current = (u_char*)b + sizeof(wsgi_gc_block_t);
+        b->current = (u_chari *) b + sizeof(wsgi_gc_block_t);
         b->left = gc->block_size;
         b->fails = 0;
     }
@@ -76,7 +76,7 @@ void wsgi_gc_reset(wsgi_gc_t *gc)
 
 void *wsgi_gc_malloc(wsgi_gc_t *gc, size_t size)
 {
-    void *p;
+    u_char *p;
     wsgi_gc_block_t *b;
 
     if (size > gc->block_size) {
@@ -108,7 +108,7 @@ void *wsgi_gc_malloc(wsgi_gc_t *gc, size_t size)
 
 static void *wsgi_gc_alloc_block(wsgi_gc_t *gc, size_t size)
 {
-    void *p;
+    u_char *p;
     wsgi_gc_block_t *b, *c, *l;
 
     b = wsgi_malloc(gc->block_size + sizeof(wsgi_gc_block_t), gc->log);
@@ -120,7 +120,7 @@ static void *wsgi_gc_alloc_block(wsgi_gc_t *gc, size_t size)
                    "block: %p > %p, size: %d",
                    gc, b, size);
 
-    p = b + sizeof(wsgi_gc_block_t);
+    p = (u_char *) b + sizeof(wsgi_gc_block_t);
 
     b->current = p + size;
     b->left = gc->block_size - size;
