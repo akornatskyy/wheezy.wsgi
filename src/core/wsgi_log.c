@@ -1,5 +1,4 @@
 
-#include <wsgi_config.h>
 #include <wsgi_core.h>
 
 

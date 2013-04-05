@@ -3,9 +3,6 @@
 #define _WSGI_LIST_H_INCLUDED_
 
 
-#include <wsgi_config.h>
-
-
 struct wsgi_list_s {
     void            *items;
     size_t          size;

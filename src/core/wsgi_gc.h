@@ -2,9 +2,6 @@
 #define _WSGI_GC_H_INCLUDED_
 
 
-#include <wsgi_config.h>
-
-
 typedef struct wsgi_gc_block_s wsgi_gc_block_t;
 
 struct wsgi_gc_block_s {

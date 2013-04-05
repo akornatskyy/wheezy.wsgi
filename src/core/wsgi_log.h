@@ -2,16 +2,13 @@
 #define _WSGI_LOG_H_INCLUDED_
 
 
-#include <wsgi_config.h>
-
-
 #define WSGI_LOG_EMERG          0
 #define WSGI_LOG_ERR            1
 #define WSGI_LOG_INFO           2
 #define WSGI_LOG_DEBUG          3
 
-#define WSGI_LOG_SOURCE_ALL     0x0F
-#define WSGI_LOG_MAX_SOURCE     15
+#define WSGI_LOG_SOURCE_ALL     0x1F
+#define WSGI_LOG_MAX_SOURCE     31
 #define WSGI_MAX_MSG            128
 
 

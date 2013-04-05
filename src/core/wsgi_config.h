@@ -4,19 +4,46 @@
 
 #define WSGI_DEBUG 1
 
-
-#include <assert.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/time.h>
-#include <time.h>
-#include <unistd.h>
+typedef enum {
+    WSGI_SCALAR,
+    WSGI_SEQUENCE,
+    WSGI_MAPPING
+} wsgi_config_option_type_t;
 
 
-#define wsgi_sleep(s)       sleep(s)
-#define wsgi_msleep(ms)     usleep(ms * 1000)
+struct wsgi_config_option_s {
+    wsgi_config_option_type_t type;
 
+    union {
+        struct {
+            u_int length;
+            u_char *value;
+        } scalar;
+
+        struct {
+            u_char *key;
+            wsgi_config_option_t *value;
+        } mapping;
+
+        struct {
+            u_int length;
+            wsgi_config_option_t **value;
+        } sequence;
+    } d;
+};
+
+struct wsgi_config_s {
+    wsgi_gc_t               *gc;
+    u_char*                 filename;
+    wsgi_config_option_t    **options;
+    u_int                   options_length;
+};
+
+
+int wsgi_config_load(wsgi_config_t *c);
+
+#define wsgi_config_key(o) o->d.mapping.key
+#define wsgi_config_scalar(o) o->d.mapping.value->d.scalar.value
+#define wsgi_config_sequence(o) o->d.mapping.value->d.sequence.value
 
 #endif /* _WSGI_CONFIG_H_INCLUDED_ */

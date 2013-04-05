@@ -22,7 +22,7 @@ cat <<END > $MAKEFILE
 .SILENT: clean
 
 CC = cc
-LINK = \$(CC)
+LINK = \$(CC) -lyaml
 CFLAGS = -g -pipe -O -W -Wall -Wno-unused-parameter -Werror
 
 CORE_INC = -I $SRC/core

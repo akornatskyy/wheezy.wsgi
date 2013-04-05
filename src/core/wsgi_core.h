@@ -5,18 +5,23 @@
 typedef struct wsgi_log_s wsgi_log_t;
 typedef struct wsgi_gc_s wsgi_gc_t;
 typedef struct wsgi_list_s wsgi_list_t;
+typedef struct wsgi_config_option_s wsgi_config_option_t;
+typedef struct wsgi_config_s wsgi_config_t;
 
 
 #define WSGI_OK                 0
 #define WSGI_ERROR             -1
 
-#define WSGI_LOG_SOURCE_CORE    1
-#define WSGI_LOG_SOURCE_ALLOC   2
-#define WSGI_LOG_SOURCE_GC      3
-#define WSGI_LOG_SOURCE_LIST    4
+#define WSGI_LOG_SOURCE_CORE    1 << 0
+#define WSGI_LOG_SOURCE_ALLOC   1 << 1
+#define WSGI_LOG_SOURCE_GC      1 << 2
+#define WSGI_LOG_SOURCE_LIST    1 << 3
 
+
+#include <wsgi_os.h>
 
 #include <wsgi_alloc.h>
+#include <wsgi_config.h>
 #include <wsgi_gc.h>
 #include <wsgi_list.h>
 #include <wsgi_log.h>
