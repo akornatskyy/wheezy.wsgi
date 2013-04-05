@@ -12,6 +12,9 @@ static wsgi_config_option_t *wsgi_config_make_scalar(
 static wsgi_config_option_t *wsgi_config_parse(
     wsgi_config_t *c, yaml_parser_t *parser);
 
+static void wsgi_config_parser_error(yaml_parser_t *parser,
+    const wsgi_log_t *log);
+
 
 int wsgi_config_load(wsgi_config_t *c)
 {
@@ -19,8 +22,14 @@ int wsgi_config_load(wsgi_config_t *c)
     yaml_parser_t parser;
     wsgi_config_option_t *o;
 
+    wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_CONFIG,
+                   "loading \"%s\"",
+                   c->filename);
     f = fopen((const char *) c->filename, "r");
     if (f == NULL) {
+        wsgi_log_error(c->gc->log, WSGI_LOG_SOURCE_CONFIG,
+                       "open \"%s\" failed",
+                       c->filename);
         return WSGI_ERROR;
     }
 
@@ -31,11 +40,18 @@ int wsgi_config_load(wsgi_config_t *c)
     yaml_parser_delete(&parser);
 
     if (o == NULL) {
+        wsgi_log_error(c->gc->log, WSGI_LOG_SOURCE_CONFIG,
+                       "load \"%s\" failed",
+                       c->filename);
         return WSGI_ERROR;
     }
 
     c->options = o->d.sequence.value;
     c->options_length = o->d.sequence.length;
+
+    wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_CONFIG,
+                   "\"%s\" loaded",
+                   c->filename);
     return WSGI_OK;
 }
 
@@ -60,6 +76,7 @@ static wsgi_config_option_t *wsgi_config_parse(
 
     while (!done) {
         if (!yaml_parser_parse(parser, &event)) {
+            wsgi_config_parser_error(parser, gc->log);
             return NULL;
         }
 
@@ -180,4 +197,46 @@ static wsgi_config_option_t *wsgi_config_make_mapping(
     o->d.mapping.value = value;
 
     return o;
+}
+
+
+static void wsgi_config_parser_error(yaml_parser_t *parser,
+                                     const wsgi_log_t *log)
+{
+    switch (parser->error)
+    {
+        case YAML_MEMORY_ERROR:
+            wsgi_log_error(log, WSGI_LOG_SOURCE_CONFIG,
+                "Not enough memory for parsing");
+            break;
+
+        case YAML_READER_ERROR:
+            wsgi_log_error(log, WSGI_LOG_SOURCE_CONFIG,
+                "%s at offset %d",
+                parser->problem,
+                parser->problem_offset);
+            break;
+
+        case YAML_PARSER_ERROR:
+        case YAML_SCANNER_ERROR:
+            if (parser->context) {
+                wsgi_log_error(log, WSGI_LOG_SOURCE_CONFIG,
+                    "%s at line %d, column %d",
+                    parser->context,
+                    parser->context_mark.line + 1,
+                    parser->context_mark.column + 1);
+            }
+
+            wsgi_log_error(log, WSGI_LOG_SOURCE_CONFIG,
+                "%s at line %d, column %d",
+                parser->problem,
+                parser->problem_mark.line + 1,
+                parser->problem_mark.column + 1);
+            break;
+
+        default:
+            wsgi_log_error(log, WSGI_LOG_SOURCE_CONFIG,
+                "Unknown internal parser error");
+            break;
+    }
 }

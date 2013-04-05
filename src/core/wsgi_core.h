@@ -16,6 +16,7 @@ typedef struct wsgi_config_s wsgi_config_t;
 #define WSGI_LOG_SOURCE_ALLOC   1 << 1
 #define WSGI_LOG_SOURCE_GC      1 << 2
 #define WSGI_LOG_SOURCE_LIST    1 << 3
+#define WSGI_LOG_SOURCE_CONFIG  1 << 4
 
 
 #include <wsgi_os.h>

@@ -16,11 +16,13 @@ int main(int argc, char *argv[])
     log->log_source = WSGI_LOG_SOURCE_CORE
         | WSGI_LOG_SOURCE_ALLOC
         | WSGI_LOG_SOURCE_GC
-        | WSGI_LOG_SOURCE_LIST;
+        | WSGI_LOG_SOURCE_LIST
+        | WSGI_LOG_SOURCE_CONFIG;
     wsgi_log_set_source(WSGI_LOG_SOURCE_ALLOC, "alloc");
     wsgi_log_set_source(WSGI_LOG_SOURCE_GC, "gc");
     wsgi_log_set_source(WSGI_LOG_SOURCE_CORE, "core");
     wsgi_log_set_source(WSGI_LOG_SOURCE_LIST, "list");
+    wsgi_log_set_source(WSGI_LOG_SOURCE_CONFIG, "config");
 
     test_list();
     test_config();
@@ -41,7 +43,9 @@ static void test_config(void)
     c->gc = gc;
     c->filename = (u_char *) "conf/wsgi.yaml";
 
-    wsgi_config_load(c);
+    if (wsgi_config_load(c) == WSGI_ERROR) {
+        goto failed;
+    }
 
     s = c->options[0];
     wsgi_log_debug(log, WSGI_LOG_SOURCE_CORE, "%s: %s",
@@ -75,6 +79,7 @@ static void test_config(void)
                        wsgi_config_scalar(o));
     }
 
+failed:
     wsgi_gc_destroy(gc);
 }
 
