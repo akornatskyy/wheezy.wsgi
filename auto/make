@@ -22,7 +22,7 @@ cat <<END > $MAKEFILE
 .SILENT: clean
 
 CC = cc
-LINK = \$(CC) -lyaml
+LINK = \$(CC)
 CFLAGS = -g -pipe -O -W -Wall -Wno-unused-parameter -Werror
 
 CORE_INC = -I $SRC/core
@@ -36,7 +36,7 @@ default: $TARGET
 
 $TARGET: \$(OBJECTS)
 	@echo -n "linking... " ; \\
-	\$(LINK) \$(OBJECTS) -o $TARGET ; \\
+	\$(LINK) \$(OBJECTS) -o $TARGET -lyaml; \\
 	echo "done."
 
 END
@@ -46,7 +46,7 @@ source=`find $SRC/core -name '*.c' | sort`
 for s in $source
 do
     o=`echo $s | sed -e "s/$SRC/$OBJ/;s/\.c/\.o/"`
-	n=`echo $s | sed 's/.*\///'`
+	n=`echo $s | sed 's/src\///'`
     cat <<END >> $MAKEFILE
 $o: $s \$(CORE_DEP)
 	@echo "\$(CC) $n" ; \\
