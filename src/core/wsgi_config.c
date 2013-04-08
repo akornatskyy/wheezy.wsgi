@@ -95,6 +95,10 @@ static wsgi_config_option_t *wsgi_config_parse(
                     }
 
                     o = wsgi_config_make_mapping(gc, name, o);
+                    if (o == NULL) {
+                        goto failed;
+                    }
+
                     *p = o;
                     state = 0;
                 }
