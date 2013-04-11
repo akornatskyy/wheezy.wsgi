@@ -1,6 +1,24 @@
 
 #include <wsgi_core.h>
 
+#if WSGI_DEBUG
+
+#define TIMESTAMP_FMT "\x1B[30;1m%F %T"
+#define TIMESTAMP_LEN 27
+#define MSG_FMT ",%03d\x1B[0m %s\x1B[0m \x1B[35;1m%s\x1B[0m: "
+
+static const char *log_level[] = {
+    "\x1B[31m[EMERG]",
+    "\x1B[31;1m[ERROR]",
+    "\x1B[33;1m[INFO]",
+    "\x1B[36m[DEBUG]"
+};
+
+#else
+
+#define TIMESTAMP_FMT "%F %T"
+#define TIMESTAMP_LEN 20
+#define MSG_FMT ",%03d %s %s: "
 
 static const char *log_level[] = {
     "[EMERG]",
@@ -8,6 +26,9 @@ static const char *log_level[] = {
     "[INFO]",
     "[DEBUG]"
 };
+
+#endif
+
 
 static const char *log_source[WSGI_LOG_MAX_SOURCE + 1];
 
@@ -44,11 +65,11 @@ void wsgi_log_msg(const wsgi_log_t *log, u_int level, u_int source,
 
     gettimeofday(&tp, 0);
     ti = localtime(&tp.tv_sec);
-    strftime(msg, 20, "%F %T", ti);
-    p = msg + 19;
-    s = WSGI_MAX_MSG - 19;
+    strftime(msg, TIMESTAMP_LEN, TIMESTAMP_FMT, ti);
+    p = msg + TIMESTAMP_LEN - 1;
+    s = WSGI_MAX_MSG - TIMESTAMP_LEN + 1;
 
-    n = snprintf(p, s, ",%d %s %s: ",
+    n = snprintf(p, s, MSG_FMT,
                  (u_int)(tp.tv_usec / 1000),
                  log_level[level],
                  log_source[source]);
