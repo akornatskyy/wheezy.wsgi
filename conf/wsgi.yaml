@@ -1,12 +1,5 @@
 
-daemon: off
-
-events:
-    backlog: 100
-
-http:
-    client_timeout: 60
-
-    servers:
-        - server_name: localhost
-          listen: 8080
+servers:
+- listen: unix:/tmp/sample.sock
+  application: my_site
+- listen: 8080

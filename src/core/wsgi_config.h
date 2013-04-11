@@ -2,48 +2,34 @@
 #define _WSGI_CONFIG_H_INCLUDED_
 
 
-#define WSGI_DEBUG 1
+#define WSGI_DEBUG                  1
 
-typedef enum {
-    WSGI_SCALAR,
-    WSGI_SEQUENCE,
-    WSGI_MAPPING
-} wsgi_config_option_type_t;
+#define WSGI_CONFIG_DEF_SEQUENCE    0x01
+#define WSGI_CONFIG_DEF_ROOT        0x10
 
 
-struct wsgi_config_option_s {
-    wsgi_config_option_type_t type;
-
-    union {
-        struct {
-            u_int length;
-            u_char *value;
-        } scalar;
-
-        struct {
-            u_char *key;
-            wsgi_config_option_t *value;
-        } mapping;
-
-        struct {
-            u_int length;
-            wsgi_config_option_t **value;
-        } sequence;
-    } d;
+struct wsgi_config_def_s {
+    const char          * const name;
+    const u_int         flags;
+    int                 (* const setup)(wsgi_config_t *c,
+                                        wsgi_config_option_t *o);
 };
 
 struct wsgi_config_s {
-    wsgi_gc_t               *gc;
-    u_char*                 filename;
-    wsgi_config_option_t    **options;
-    u_int                   options_length;
+    u_int               root_block;
+    void                *adapter;
+    int                 (*lookup)(void *adapter, wsgi_config_option_t *o);
+    wsgi_log_t          *log;
 };
 
+struct wsgi_config_option_s {
+    wsgi_log_t              *log;
+    u_char                  *value;
+    wsgi_config_def_t       *def;
+    void                    *ctx;
+    u_int                   block;
+};
 
-int wsgi_config_load(wsgi_config_t *c);
-
-#define wsgi_config_key(o) o->d.mapping.key
-#define wsgi_config_scalar(o) o->d.mapping.value->d.scalar.value
-#define wsgi_config_sequence(o) o->d.mapping.value->d.sequence.value
+int wsgi_config_load(wsgi_config_t *c, const u_char *filename);
 
 #endif /* _WSGI_CONFIG_H_INCLUDED_ */

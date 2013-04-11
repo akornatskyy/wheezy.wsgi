@@ -2,15 +2,51 @@
 #include <wsgi_core.h>
 
 
-static void check_list(const wsgi_list_t *l);
-static void test_list(void);
-static void test_config(void);
+#define WSGI_CONFIG_DEF_SERVER 0x20
 
-static wsgi_log_t *log;
+static void *wsgi_sample_create(wsgi_cycle_t *cycle);
+static int wsgi_sample_init(wsgi_cycle_t *cycle, void *ctx);
+
+static int wsgi_server_add(wsgi_config_t *c, wsgi_config_option_t *o);
+
+static int wsgi_server_listen(wsgi_config_t *c, wsgi_config_option_t *o);
+
+static int wsgi_server_application(wsgi_config_t *c, wsgi_config_option_t *o);
+
+
+static wsgi_config_def_t sample_config_defs[] = {
+    { "servers",
+      WSGI_CONFIG_DEF_ROOT | WSGI_CONFIG_DEF_SEQUENCE,
+      wsgi_server_add },
+    { "listen",
+      WSGI_CONFIG_DEF_SERVER,
+      wsgi_server_listen },
+    { "application",
+      WSGI_CONFIG_DEF_SERVER,
+      wsgi_server_application },
+    { NULL }
+};
+
+static wsgi_module_t sample_module = {
+    "sample", -1,
+    sample_config_defs,
+    wsgi_sample_create,
+    wsgi_sample_init
+};
+
+wsgi_module_t* modules[] = {
+    &sample_module
+};
+
+const u_int modules_count = sizeof(modules) / sizeof(wsgi_module_t *);
 
 
 int main(int argc, char *argv[])
 {
+    u_int i;
+    wsgi_log_t *log;
+    wsgi_cycle_t* cycle;
+
     log = wsgi_log_init();
     log->log_level = WSGI_LOG_DEBUG;
     log->log_source = WSGI_LOG_SOURCE_CORE
@@ -24,107 +60,54 @@ int main(int argc, char *argv[])
     wsgi_log_set_source(WSGI_LOG_SOURCE_LIST, "list");
     wsgi_log_set_source(WSGI_LOG_SOURCE_CONFIG, "config");
 
-    test_list();
-    test_config();
+    for (i = 0; i < modules_count; i++) {
+        modules[i]->id = i;
+    }
 
+    cycle = wsgi_cycle_create(log);
+    cycle->filename = (u_char*) "conf/wsgi.yaml";
+
+    if (wsgi_cycle_init(cycle) != WSGI_OK) {
+        wsgi_cycle_destroy(cycle);
+        return 1;
+    }
+
+    wsgi_cycle_destroy(cycle);
     return 0;
 }
 
-
-static void test_config(void)
+static int wsgi_server_add(wsgi_config_t *c, wsgi_config_option_t *o)
 {
-    u_int i;
-    wsgi_gc_t *gc;
-    wsgi_config_t *c;
-    wsgi_config_option_t *o, *s;
-
-    gc = wsgi_gc_create(512, log);
-    c = wsgi_gc_malloc(gc, sizeof(wsgi_config_t));
-    c->gc = gc;
-    c->filename = (u_char *) "conf/wsgi.yaml";
-
-    if (wsgi_config_load(c) == WSGI_ERROR) {
-        goto failed;
-    }
-
-    s = c->options[0];
-    wsgi_log_debug(log, WSGI_LOG_SOURCE_CORE, "%s: %s",
-                   wsgi_config_key(s),
-                   wsgi_config_scalar(s));
-    s = c->options[1];
-    wsgi_log_debug(log, WSGI_LOG_SOURCE_CORE, "%s:",
-                   wsgi_config_key(s));
-    s = wsgi_config_sequence(s)[0];
-    wsgi_log_debug(log, WSGI_LOG_SOURCE_CORE, " %s: %s",
-                   wsgi_config_key(s),
-                   wsgi_config_scalar(s));
-
-    s = c->options[2];
-    wsgi_log_debug(log, WSGI_LOG_SOURCE_CORE, "%s:",
-                   wsgi_config_key(s));
-    s = wsgi_config_sequence(s)[0];
-    wsgi_log_debug(log, WSGI_LOG_SOURCE_CORE, " %s: %s",
-                   wsgi_config_key(s),
-                   wsgi_config_scalar(s));
-
-    s = c->options[2];
-    s = wsgi_config_sequence(s)[1];
-    wsgi_log_debug(log, WSGI_LOG_SOURCE_CORE, " %s",
-                   s->d.mapping.key);
-    for (i = 0; i < 2; i++) {
-        o = wsgi_config_sequence(s)[i];
-        assert(o);
-        wsgi_log_debug(log, WSGI_LOG_SOURCE_CORE, "  %s: %s",
-                       wsgi_config_key(o),
-                       wsgi_config_scalar(o));
-    }
-
-failed:
-    wsgi_gc_destroy(gc);
+    wsgi_log_debug(c->log, WSGI_LOG_SOURCE_CORE,
+                   "add server");
+    o->block = WSGI_CONFIG_DEF_SERVER;
+    return WSGI_OK;
 }
 
-
-static void test_list(void)
+static int wsgi_server_listen(wsgi_config_t *c, wsgi_config_option_t *o)
 {
-    u_int i;
-    u_int *item;
-    wsgi_gc_t *gc;
-    wsgi_list_t *l;
-    wsgi_list_t d;
-
-    gc = wsgi_gc_create(144, log);
-
-    l = wsgi_list_create(gc, 4, sizeof(u_int));
-    wsgi_list_init(&d, gc, 4, sizeof(u_int));
-
-    for (i = 0; i < 17; i++) {
-        item = wsgi_list_append(l);
-        if (item == NULL) {
-            break;
-        }
-
-        *item = i;
-
-        item = wsgi_list_append(&d);
-        if (item == NULL) {
-            break;
-        }
-
-        *item = i;
-    }
-
-    check_list(l);
-    check_list(&d);
-
-    wsgi_gc_destroy(gc);
+    wsgi_log_debug(c->log, WSGI_LOG_SOURCE_CORE,
+                   "  listen: %s",
+                   o->value);
+    return WSGI_OK;
 }
 
-
-static void check_list(const wsgi_list_t *l)
+static int wsgi_server_application(wsgi_config_t *c, wsgi_config_option_t *o)
 {
-    u_int i;
-    const u_int *items = (u_int *)l->items;
-    for(i = 0; i < l->length; i++) {
-        assert (items[i] == i);
-    }
+    wsgi_log_debug(c->log, WSGI_LOG_SOURCE_CORE,
+                   "  application: %s",
+                   o->value);
+    return WSGI_OK;
+}
+
+static void *wsgi_sample_create(wsgi_cycle_t *cycle)
+{
+    wsgi_log_debug(cycle->log, WSGI_LOG_SOURCE_CORE,
+                   "create sample config context");
+    return "1";
+}
+
+static int wsgi_sample_init(wsgi_cycle_t *cycle, void *ctx)
+{
+    return WSGI_OK;
 }
