@@ -24,7 +24,7 @@ wsgi_gc_t *wsgi_gc_create(size_t size, const wsgi_log_t *log)
     gc->current = (wsgi_gc_block_t *) gc;
 
     wsgi_log_debug(log, WSGI_LOG_SOURCE_GC,
-                   "create: %p, left:%d",
+                   "create: %p, left: %d",
                    gc, gc->b.left);
     return gc;
 }
