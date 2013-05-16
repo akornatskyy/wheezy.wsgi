@@ -13,6 +13,12 @@ find $SRC -type d | sed -e "s/$SRC/$OBJ/" | xargs mkdir -p
 core_dep=`find $SRC/core -name '*.h' | sort`
 core_dep=$(mk_line "$core_dep")
 
+event_dep=`find $SRC/event -name '*.h' | sort`
+event_dep=$(mk_line "$event_dep")
+
+http_dep=`find $SRC/http -name '*.h' | sort`
+http_dep=$(mk_line "$http_dep")
+
 objects=`find $SRC -name '*.c' | sort`
 objects=$(mk_line "$objects")
 objects=`echo "$objects" | sed -e "s/$SRC/$OBJ/;s/\.c/\.o/"`
@@ -27,6 +33,13 @@ CFLAGS = -g -pipe -O -W -Wall -Wno-unused-parameter -Werror
 
 CORE_INC = -I $SRC/core
 CORE_DEP = $core_dep
+
+EVENT_INC = -I $SRC/event -I $SRC/event/modules
+EVENT_DEP = $event_dep
+
+HTTP_INC = -I $SRC/event -I $SRC/http
+HTTP_DEP = $http_dep
+
 OBJECTS = $objects
 
 all: default
@@ -39,6 +52,11 @@ $TARGET: \$(OBJECTS)
 	\$(LINK) \$(OBJECTS) -o $TARGET -lyaml; \\
 	echo "done."
 
+build/wsgi_main.o: src/wsgi_main.c \$(CORE_DEP) \$(EVENT_DEP) \$(HTTP_DEP)
+	@echo "\$(CC) wsgi_main.c" ; \\
+    \$(CC) \$(CFLAGS) \$(CORE_INC) \$(EVENT_INC) \$(HTTP_INC) \\
+        -c src/wsgi_main.c -o \$@
+
 END
 
 
@@ -50,7 +68,33 @@ do
     cat <<END >> $MAKEFILE
 $o: $s \$(CORE_DEP)
 	@echo "\$(CC) $n" ; \\
-	\$(CC) \$(CFLAGS) \$(CORE_INC) -c $s -o \$@
+    \$(CC) \$(CFLAGS) \$(CORE_INC) -c $s -o \$@
+
+END
+done
+
+source=`find $SRC/event -name '*.c' | sort`
+for s in $source
+do
+    o=`echo $s | sed -e "s/$SRC/$OBJ/;s/\.c/\.o/"`
+	n=`echo $s | sed 's/src\///'`
+    cat <<END >> $MAKEFILE
+$o: $s \$(CORE_DEP) \$(EVENT_DEP)
+	@echo "\$(CC) $n" ; \\
+    \$(CC) \$(CFLAGS) \$(CORE_INC) \$(EVENT_INC) -c $s -o \$@
+
+END
+done
+
+source=`find $SRC/http -name '*.c' | sort`
+for s in $source
+do
+    o=`echo $s | sed -e "s/$SRC/$OBJ/;s/\.c/\.o/"`
+	n=`echo $s | sed 's/src\///'`
+    cat <<END >> $MAKEFILE
+$o: $s \$(CORE_DEP) \$(EVENT_DEP) \$(HTTP_DEP)
+	@echo "\$(CC) $n" ; \\
+    \$(CC) \$(CFLAGS) \$(CORE_INC) \$(EVENT_INC) \$(HTTP_INC) -c $s -o \$@
 
 END
 done
@@ -59,4 +103,7 @@ done
 cat <<END >> $MAKEFILE
 clean:
 	rm -f $TARGET ; find $OBJ -name '*.o' -exec rm -f {} \;
+
+socat:
+	cat conf/http-get.txt | socat - unix:/tmp/sample.sock
 END

@@ -1,0 +1,13 @@
+GET / HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+User-Agent: Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31
+DNT: 1
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: uk,en-US;q=0.8,en;q=0.6
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+If-None-Match: "879698e7"
+If-Modified-Since: Wed, 15 May 2013 11:24:53 GMT
+

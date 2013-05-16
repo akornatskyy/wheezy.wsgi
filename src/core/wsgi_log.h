@@ -3,13 +3,13 @@
 
 
 #define WSGI_LOG_EMERG          0
-#define WSGI_LOG_ERR            1
+#define WSGI_LOG_ERROR          1
 #define WSGI_LOG_INFO           2
 #define WSGI_LOG_DEBUG          3
 
-#define WSGI_LOG_SOURCE_ALL     0x2F
+#define WSGI_LOG_SOURCE_ALL     0x7FF
 #define WSGI_LOG_MAX_SOURCE     WSGI_LOG_SOURCE_ALL
-#define WSGI_MAX_MSG            128
+#define WSGI_MAX_MSG            156
 
 
 typedef void (*wsgi_log_handler_pt) (const wsgi_log_t *log,
@@ -31,8 +31,8 @@ void wsgi_log_set_source(u_int source, const char *name);
     wsgi_log_msg(log, WSGI_LOG_EMERG, __VA_ARGS__)
 
 #define wsgi_log_error(log, source, ...) \
-    if (log->log_level >= WSGI_LOG_ERR && log->log_source & source) \
-        wsgi_log_msg(log, WSGI_LOG_ERR, source, __VA_ARGS__)
+    if (log->log_level >= WSGI_LOG_ERROR && log->log_source & source) \
+        wsgi_log_msg(log, WSGI_LOG_ERROR, source, __VA_ARGS__)
 
 #define wsgi_log_info(log, source, ...) \
     if (log->log_level >= WSGI_LOG_INFO && log->log_source & source) \
