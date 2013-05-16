@@ -56,7 +56,9 @@ void wsgi_gc_reset(wsgi_gc_t *gc)
     b = &gc->b;
     wsgi_log_debug(gc->log, WSGI_LOG_SOURCE_GC,
                    "reset: %p, fails: %d, freed: %d",
-                   b, b->fails, gc->block_size - b->left);
+                   b, b->fails,
+                   gc->block_size - b->left
+                   - (sizeof(wsgi_gc_t) - sizeof(wsgi_gc_block_t)));
 
     b->current = (u_char *) b + sizeof(wsgi_gc_t);
     b->left = gc->block_size - sizeof(wsgi_gc_t) + sizeof(wsgi_gc_block_t);
@@ -103,6 +105,19 @@ void *wsgi_gc_malloc(wsgi_gc_t *gc, size_t size)
     }
 
     return wsgi_gc_alloc_block(gc, size);
+}
+
+
+void *wsgi_gc_calloc(wsgi_gc_t *gc, size_t size)
+{
+    void *p;
+
+    p = wsgi_gc_malloc(gc, size);
+    if (p) {
+        memset(p, 0, size);
+    }
+
+    return p;
 }
 
 

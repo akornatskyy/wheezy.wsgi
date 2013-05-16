@@ -27,4 +27,6 @@ void wsgi_gc_reset(wsgi_gc_t *gc);
 
 void *wsgi_gc_malloc(wsgi_gc_t *h, size_t size);
 
+void *wsgi_gc_calloc(wsgi_gc_t *gc, size_t size);
+
 #endif /* _WSGI_GC_H_INCLUDED_ */
