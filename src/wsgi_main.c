@@ -77,6 +77,10 @@ int test_acceptor(wsgi_log_t *log)
 
     gc = wsgi_gc_create(512, log);
 
+    if (wsgi_signal_init(log) != WSGI_OK) {
+        goto failed;
+    }
+
     addr = wsgi_addr_resolve(gc, (u_char *) "unix:/tmp/sample.sock");
     //addr = wsgi_addr_resolve(gc, (u_char *) "127.0.0.1:8080");
     //addr = wsgi_addr_resolve(gc, (u_char *) "[::1]:8080");

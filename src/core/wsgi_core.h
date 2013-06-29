@@ -39,6 +39,7 @@ typedef struct wsgi_socket_s wsgi_socket_t;
 #include <wsgi_list.h>
 #include <wsgi_log.h>
 #include <wsgi_pool.h>
+#include <wsgi_signal.h>
 #include <wsgi_socket.h>
 
 #endif /* _WSGI_CORE_H_INCLUDED_ */

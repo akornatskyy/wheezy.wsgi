@@ -2,6 +2,9 @@
 #include <wsgi_event.h>
 
 
+extern sig_atomic_t wsgi_signal_shutdown;
+
+
 struct wsgi_reactor_s {
     const wsgi_log_t            *log;
     wsgi_event_loop_t           *event_loop;
@@ -37,14 +40,14 @@ int wsgi_reactor_unregister(wsgi_reactor_t *r, wsgi_event_handler_t *h)
 
 int wsgi_reactor_wait_for_events(wsgi_reactor_t *r)
 {
-    u_int i;
-
     r->active = 1;
-    for (i = 0; i < 3; i++) {
+    while (!wsgi_signal_shutdown) {
         if (r->event_loop->wait(r->event_loop->self, -1) != WSGI_OK) {
             return WSGI_ERROR;
         }
     }
+
+    r->active = 0;
 
     return WSGI_OK;
 }
