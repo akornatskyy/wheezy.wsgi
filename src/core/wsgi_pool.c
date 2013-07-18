@@ -2,6 +2,24 @@
 #include <wsgi_core.h>
 
 
+wsgi_pool_t *wsgi_pool_create(wsgi_gc_t *gc, u_int capacity,
+                              size_t size)
+{
+    wsgi_pool_t *pool;
+
+    pool = wsgi_gc_malloc(gc, sizeof(wsgi_pool_t));
+    if (pool == NULL) {
+        return pool;
+    }
+
+    if (wsgi_pool_init(pool, gc, capacity, size) != WSGI_OK) {
+        return NULL;
+    }
+
+    return pool;
+}
+
+
 int wsgi_pool_init(wsgi_pool_t *p, wsgi_gc_t *gc, u_int capacity,
                    size_t size)
 {
