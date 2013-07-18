@@ -55,9 +55,11 @@ int wsgi_reactor_wait_for_events(wsgi_reactor_t *r)
 
 int wsgi_reactor_destroy(wsgi_reactor_t *r)
 {
+    wsgi_event_loop_t *event_loop;
+
+    event_loop = r->event_loop;
     r->active = 0;
-    r->event_loop->close(r->event_loop->self);
     r->event_loop = NULL;
 
-    return WSGI_OK;
+    return event_loop->close(event_loop->self);
 }
