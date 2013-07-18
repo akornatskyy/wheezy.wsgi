@@ -1,5 +1,8 @@
 
+events: 16
 servers:
 - listen: unix:/tmp/sample.sock
-  application: my_site
-- listen: 8080
+  worker_connections: 8
+  #application: my_site
+- listen: 127.0.0.1:8080
+  worker_connections: 4
