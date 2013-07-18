@@ -15,12 +15,14 @@ struct wsgi_module_s {
     wsgi_config_def_t       *defs;
     void                    *(*create)(wsgi_cycle_t *cycle);
     int                     (*init)(wsgi_cycle_t *cycle, void *ctx);
+    int                     (*shutdown)(wsgi_cycle_t *cycle, void *ctx);
 };
 
 
 wsgi_cycle_t *wsgi_cycle_create(wsgi_log_t* log);
 void wsgi_cycle_destroy(wsgi_cycle_t *cycle);
 int wsgi_cycle_init(wsgi_cycle_t *cycle);
+int wsgi_cycle_shutdown(wsgi_cycle_t *cycle);
 
 extern wsgi_module_t* modules[];
 extern const u_int modules_count;

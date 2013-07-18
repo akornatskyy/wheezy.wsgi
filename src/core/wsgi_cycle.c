@@ -10,7 +10,7 @@ wsgi_cycle_t *wsgi_cycle_create(wsgi_log_t* log)
     wsgi_gc_t *gc;
     wsgi_cycle_t *cycle;
 
-    gc = wsgi_gc_create(256, log);
+    gc = wsgi_gc_create(512, log);
     cycle = wsgi_gc_malloc(gc, sizeof(wsgi_cycle_t));
     cycle->log = log;
     cycle->gc = gc;
@@ -37,7 +37,7 @@ int wsgi_cycle_init(wsgi_cycle_t *cycle)
             ctx = m->create(cycle);
             if (ctx == NULL) {
                 wsgi_log_error(cycle->log, WSGI_LOG_SOURCE_CONFIG,
-                    "unable to create context for module \"%s\"",
+                    "unable to create context for module: %s",
                     m->name);
                 return WSGI_ERROR;
             }
@@ -60,14 +60,45 @@ int wsgi_cycle_init(wsgi_cycle_t *cycle)
     for (i = 0; i < modules_count; i++) {
         m = modules[i];
         if (m->init) {
+            wsgi_log_debug(cycle->log, WSGI_LOG_SOURCE_CONFIG,
+                   "initializing module: %s", m->name);
             if (m->init(cycle, cycle->ctx[m->id]) != WSGI_OK) {
                 wsgi_log_error(cycle->log, WSGI_LOG_SOURCE_CONFIG,
-                    "unable to initialize module \"%s\"",
+                    "unable to initialize module: %s",
                     m->name);
                 return WSGI_ERROR;
             }
         }
     }
+
+    wsgi_log_debug(cycle->log, WSGI_LOG_SOURCE_CONFIG,
+                   "initialized");
+
+    return WSGI_OK;
+}
+
+int wsgi_cycle_shutdown(wsgi_cycle_t *cycle)
+{
+    u_int i;
+    const wsgi_module_t *m;
+
+    i = modules_count;
+    while (i > 0) {
+        m = modules[--i];
+        if (m->shutdown) {
+            wsgi_log_debug(cycle->log, WSGI_LOG_SOURCE_CONFIG,
+                   "shutting down module: %s", m->name);
+            if (m->shutdown(cycle, cycle->ctx[m->id]) != WSGI_OK) {
+                wsgi_log_error(cycle->log, WSGI_LOG_SOURCE_CONFIG,
+                    "unable to shutdown module: %s",
+                    m->name);
+                return WSGI_ERROR;
+            }
+        }
+    }
+
+    wsgi_log_debug(cycle->log, WSGI_LOG_SOURCE_CONFIG,
+                   "shutted down");
 
     return WSGI_OK;
 }
