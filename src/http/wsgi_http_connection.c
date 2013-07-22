@@ -5,7 +5,8 @@
 static int wsgi_http_connection_handle_read(void *self);
 
 
-int wsgi_http_connection_open(wsgi_connection_t *c)
+int
+wsgi_http_connection_open(wsgi_connection_t *c)
 {
     wsgi_event_handler_t *h;
 
@@ -26,7 +27,8 @@ int wsgi_http_connection_open(wsgi_connection_t *c)
 }
 
 
-int wsgi_http_connection_close(wsgi_connection_t *c)
+int
+wsgi_http_connection_close(wsgi_connection_t *c)
 {
     if (c->socket.fd == -1) {
         return WSGI_OK;
@@ -40,7 +42,8 @@ int wsgi_http_connection_close(wsgi_connection_t *c)
 }
 
 
-int wsgi_http_connection_pool_init(wsgi_pool_t *p, wsgi_log_t *log)
+int
+wsgi_http_connection_pool_init(wsgi_pool_t *p, wsgi_log_t *log)
 {
     u_int i;
     wsgi_gc_t *gc;
@@ -63,7 +66,8 @@ int wsgi_http_connection_pool_init(wsgi_pool_t *p, wsgi_log_t *log)
 }
 
 
-int wsgi_http_connection_pool_close(wsgi_pool_t *p)
+int
+wsgi_http_connection_pool_close(wsgi_pool_t *p)
 {
     u_int i;
     wsgi_connection_t *c;
@@ -80,7 +84,8 @@ int wsgi_http_connection_pool_close(wsgi_pool_t *p)
 }
 
 
-static int wsgi_http_connection_handle_read(void *self)
+static int
+wsgi_http_connection_handle_read(void *self)
 {
     ssize_t n;
     size_t size;

@@ -12,7 +12,8 @@ static int wsgi_inet6_ntop(const struct in6_addr *ia, const u_char *port,
                            wsgi_gc_t *gc, u_char **name);
 
 
-wsgi_addr_t *wsgi_addr_resolve(wsgi_gc_t *gc, const u_char *url)
+wsgi_addr_t *
+wsgi_addr_resolve(wsgi_gc_t *gc, const u_char *url)
 {
     wsgi_addr_t *a;
 
@@ -35,7 +36,8 @@ wsgi_addr_t *wsgi_addr_resolve(wsgi_gc_t *gc, const u_char *url)
 }
 
 
-static int wsgi_init_unix(wsgi_addr_t *a, wsgi_gc_t *gc, const u_char *url)
+static int
+wsgi_init_unix(wsgi_addr_t *a, wsgi_gc_t *gc, const u_char *url)
 {
     u_int l;
     struct sockaddr_un *sa;
@@ -77,7 +79,8 @@ static int wsgi_init_unix(wsgi_addr_t *a, wsgi_gc_t *gc, const u_char *url)
 }
 
 
-static int wsgi_init_inet(wsgi_addr_t *a, wsgi_gc_t *gc, const u_char *url)
+static int
+wsgi_init_inet(wsgi_addr_t *a, wsgi_gc_t *gc, const u_char *url)
 {
     u_char *host;
     const u_char *port;
@@ -157,8 +160,9 @@ failed:
 }
 
 
-static int wsgi_sockaddr_ntop(const struct sockaddr *sa, const u_char *port,
-                              wsgi_gc_t *gc, u_char **name)
+static int
+wsgi_sockaddr_ntop(const struct sockaddr *sa, const u_char *port,
+                   wsgi_gc_t *gc, u_char **name)
 {
     switch(sa->sa_family) {
         case AF_INET:
@@ -173,8 +177,9 @@ static int wsgi_sockaddr_ntop(const struct sockaddr *sa, const u_char *port,
 }
 
 
-static int wsgi_inet_ntop(const struct in_addr *ia, const u_char *port,
-                          wsgi_gc_t *gc, u_char **name)
+static int
+wsgi_inet_ntop(const struct in_addr *ia, const u_char *port,
+               wsgi_gc_t *gc, u_char **name)
 {
     char b[INET_ADDRSTRLEN];
     char *p;

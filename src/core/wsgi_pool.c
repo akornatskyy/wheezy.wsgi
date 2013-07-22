@@ -2,8 +2,8 @@
 #include <wsgi_core.h>
 
 
-wsgi_pool_t *wsgi_pool_create(wsgi_gc_t *gc, u_int capacity,
-                              size_t size)
+wsgi_pool_t *
+wsgi_pool_create(wsgi_gc_t *gc, u_int capacity, size_t size)
 {
     wsgi_pool_t *pool;
 
@@ -20,8 +20,8 @@ wsgi_pool_t *wsgi_pool_create(wsgi_gc_t *gc, u_int capacity,
 }
 
 
-int wsgi_pool_init(wsgi_pool_t *p, wsgi_gc_t *gc, u_int capacity,
-                   size_t size)
+int
+wsgi_pool_init(wsgi_pool_t *p, wsgi_gc_t *gc, u_int capacity, size_t size)
 {
     u_int i;
     void *t;
@@ -53,7 +53,8 @@ int wsgi_pool_init(wsgi_pool_t *p, wsgi_gc_t *gc, u_int capacity,
 }
 
 
-void *wsgi_pool_acquire(wsgi_pool_t *p)
+void *
+wsgi_pool_acquire(wsgi_pool_t *p)
 {
     void *t;
 
@@ -74,7 +75,8 @@ void *wsgi_pool_acquire(wsgi_pool_t *p)
 }
 
 
-int wsgi_pool_get_back(wsgi_pool_t *p, void *item)
+int
+wsgi_pool_get_back(wsgi_pool_t *p, void *item)
 {
     if (p->free_count == p->capacity) {
         wsgi_log_error(p->log, WSGI_LOG_SOURCE_POOL,

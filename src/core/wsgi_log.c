@@ -39,7 +39,8 @@ static void wsgi_printf_log_handler(const wsgi_log_t *log,
                                     const char *msg, size_t size);
 
 
-wsgi_log_t *wsgi_log_init()
+wsgi_log_t *
+wsgi_log_init()
 {
     u_int i;
     for(i = 1; i < WSGI_LOG_MAX_SOURCE; i++) {
@@ -53,8 +54,9 @@ wsgi_log_t *wsgi_log_init()
 }
 
 
-void wsgi_log_msg(const wsgi_log_t *log, u_int level, u_int source,
-                  const char *fmt, ...)
+void
+wsgi_log_msg(const wsgi_log_t *log, u_int level, u_int source,
+             const char *fmt, ...)
 {
     va_list args;
     char msg[WSGI_MAX_MSG];
@@ -86,14 +88,15 @@ void wsgi_log_msg(const wsgi_log_t *log, u_int level, u_int source,
 }
 
 
-void wsgi_printf_log_handler(const wsgi_log_t *log, const char *msg,
-                             size_t size)
+void
+wsgi_printf_log_handler(const wsgi_log_t *log, const char *msg, size_t size)
 {
     printf(msg);
 }
 
 
-void wsgi_log_set_source(u_int source, const char *name)
+void
+wsgi_log_set_source(u_int source, const char *name)
 {
     assert(source > 0 && source < WSGI_LOG_MAX_SOURCE);
     log_source[source] = name;

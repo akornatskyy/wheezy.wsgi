@@ -5,7 +5,8 @@
 #define WSGI_ACCEPT_SOCKLEN 28
 
 
-wsgi_socket_t *wsgi_socket_create(wsgi_gc_t *gc)
+wsgi_socket_t *
+wsgi_socket_create(wsgi_gc_t *gc)
 {
     wsgi_socket_t *s;
 
@@ -20,14 +21,17 @@ wsgi_socket_t *wsgi_socket_create(wsgi_gc_t *gc)
 }
 
 
-void wsgi_socket_init(wsgi_socket_t *s, const wsgi_log_t *log)
+void
+wsgi_socket_init(wsgi_socket_t *s, const wsgi_log_t *log)
 {
     s->log = log;
     s->addr = NULL;
     s->fd = -1;
 }
 
-int wsgi_socket_open(wsgi_socket_t *s, wsgi_addr_t *a)
+
+int
+wsgi_socket_open(wsgi_socket_t *s, wsgi_addr_t *a)
 {
     int fd, reuseaddr;
 
@@ -81,7 +85,8 @@ int wsgi_socket_open(wsgi_socket_t *s, wsgi_addr_t *a)
 }
 
 
-int wsgi_socket_accept(wsgi_socket_t *s, wsgi_socket_t *peer, wsgi_gc_t *gc)
+int
+wsgi_socket_accept(wsgi_socket_t *s, wsgi_socket_t *peer, wsgi_gc_t *gc)
 {
     int fd;
     socklen_t length = WSGI_ACCEPT_SOCKLEN;
@@ -113,7 +118,8 @@ int wsgi_socket_accept(wsgi_socket_t *s, wsgi_socket_t *peer, wsgi_gc_t *gc)
 }
 
 
-int wsgi_socket_close(wsgi_socket_t *s)
+int
+wsgi_socket_close(wsgi_socket_t *s)
 {
     int fd;
 

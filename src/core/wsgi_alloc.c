@@ -2,7 +2,8 @@
 #include <wsgi_core.h>
 
 
-void *wsgi_malloc(size_t size, const wsgi_log_t *log)
+void *
+wsgi_malloc(size_t size, const wsgi_log_t *log)
 {
     void *p;
 

@@ -19,7 +19,8 @@ typedef struct wsgi_epoll_s {
 } wsgi_epoll_t;
 
 
-wsgi_event_loop_t *wsgi_epoll_create(wsgi_gc_t *gc, u_int length)
+wsgi_event_loop_t *
+wsgi_epoll_create(wsgi_gc_t *gc, u_int length)
 {
     wsgi_epoll_t *e;
     wsgi_event_loop_t *l;
@@ -59,7 +60,8 @@ wsgi_event_loop_t *wsgi_epoll_create(wsgi_gc_t *gc, u_int length)
 }
 
 
-static int wsgi_epoll_add(void *self, wsgi_event_handler_t *h)
+static int
+wsgi_epoll_add(void *self, wsgi_event_handler_t *h)
 {
     wsgi_epoll_t *e;
     struct epoll_event ev;
@@ -87,7 +89,8 @@ static int wsgi_epoll_add(void *self, wsgi_event_handler_t *h)
 }
 
 
-static int wsgi_epoll_del(void *self, wsgi_event_handler_t *h)
+static int
+wsgi_epoll_del(void *self, wsgi_event_handler_t *h)
 {
     wsgi_epoll_t *e;
     struct epoll_event ev;
@@ -114,7 +117,8 @@ static int wsgi_epoll_del(void *self, wsgi_event_handler_t *h)
 }
 
 
-static int wsgi_epoll_wait(void *self, int timeout)
+static int
+wsgi_epoll_wait(void *self, int timeout)
 {
     int ready;
     wsgi_epoll_t *e;
@@ -167,7 +171,8 @@ static int wsgi_epoll_wait(void *self, int timeout)
 }
 
 
-static int wsgi_epoll_close(void *self)
+static int
+wsgi_epoll_close(void *self)
 {
     wsgi_epoll_t *e;
     int fd;

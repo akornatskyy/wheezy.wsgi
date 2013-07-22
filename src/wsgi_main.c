@@ -13,7 +13,8 @@ wsgi_module_t* modules[] = {
 const uint modules_count = sizeof(modules) / sizeof(wsgi_module_t *);
 
 
-static int run_cycle(wsgi_log_t *log)
+static int
+run_cycle(wsgi_log_t *log)
 {
     u_int i;
     wsgi_cycle_t *cycle;
@@ -41,7 +42,8 @@ static int run_cycle(wsgi_log_t *log)
 }
 
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
     wsgi_log_t *log;
 

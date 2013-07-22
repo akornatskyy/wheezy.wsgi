@@ -5,7 +5,8 @@
 static int wsgi_cycle_lookup_config(void *adapter, wsgi_config_option_t *c);
 
 
-wsgi_cycle_t *wsgi_cycle_create(wsgi_log_t* log)
+wsgi_cycle_t *
+wsgi_cycle_create(wsgi_log_t* log)
 {
     wsgi_gc_t *gc;
     wsgi_cycle_t *cycle;
@@ -18,12 +19,16 @@ wsgi_cycle_t *wsgi_cycle_create(wsgi_log_t* log)
     return cycle;
 }
 
-void wsgi_cycle_destroy(wsgi_cycle_t *cycle)
+
+void
+wsgi_cycle_destroy(wsgi_cycle_t *cycle)
 {
     wsgi_gc_destroy(cycle->gc);
 }
 
-int wsgi_cycle_init(wsgi_cycle_t *cycle)
+
+int
+wsgi_cycle_init(wsgi_cycle_t *cycle)
 {
     u_int i;
     const wsgi_module_t *m;
@@ -77,7 +82,9 @@ int wsgi_cycle_init(wsgi_cycle_t *cycle)
     return WSGI_OK;
 }
 
-int wsgi_cycle_shutdown(wsgi_cycle_t *cycle)
+
+int
+wsgi_cycle_shutdown(wsgi_cycle_t *cycle)
 {
     u_int i;
     const wsgi_module_t *m;
@@ -103,7 +110,9 @@ int wsgi_cycle_shutdown(wsgi_cycle_t *cycle)
     return WSGI_OK;
 }
 
-int wsgi_cycle_lookup_config(void *adapter, wsgi_config_option_t *o)
+
+int
+wsgi_cycle_lookup_config(void *adapter, wsgi_config_option_t *o)
 {
     u_int i;
     wsgi_cycle_t *cycle;

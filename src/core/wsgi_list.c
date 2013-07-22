@@ -2,7 +2,8 @@
 #include <wsgi_core.h>
 
 
-wsgi_list_t *wsgi_list_create(wsgi_gc_t *gc, u_int capacity, size_t size)
+wsgi_list_t *
+wsgi_list_create(wsgi_gc_t *gc, u_int capacity, size_t size)
 {
     wsgi_list_t *list;
 
@@ -19,8 +20,8 @@ wsgi_list_t *wsgi_list_create(wsgi_gc_t *gc, u_int capacity, size_t size)
 }
 
 
-int wsgi_list_init(wsgi_list_t *list, wsgi_gc_t *gc, u_int capacity,
-                   size_t size)
+int
+wsgi_list_init(wsgi_list_t *list, wsgi_gc_t *gc, u_int capacity, size_t size)
 {
     list->items = wsgi_gc_malloc(gc, capacity * size);
     if (list->items == NULL) {
@@ -40,7 +41,8 @@ int wsgi_list_init(wsgi_list_t *list, wsgi_gc_t *gc, u_int capacity,
 }
 
 
-void *wsgi_list_append(wsgi_list_t *list)
+void *
+wsgi_list_append(wsgi_list_t *list)
 {
     u_char *p;
     size_t size;

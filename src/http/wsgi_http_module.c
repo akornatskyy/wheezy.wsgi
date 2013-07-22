@@ -39,7 +39,8 @@ wsgi_module_t http_module = {
 };
 
 
-static int wsgi_server_add(wsgi_config_t *c, wsgi_config_option_t *o)
+static int
+wsgi_server_add(wsgi_config_t *c, wsgi_config_option_t *o)
 {
     wsgi_http_ctx_t *ctx;
     wsgi_http_server_t *server;
@@ -62,7 +63,8 @@ static int wsgi_server_add(wsgi_config_t *c, wsgi_config_option_t *o)
 }
 
 
-static int wsgi_server_listen(wsgi_config_t *c, wsgi_config_option_t *o)
+static int
+wsgi_server_listen(wsgi_config_t *c, wsgi_config_option_t *o)
 {
     wsgi_http_ctx_t *ctx;
     wsgi_list_t *servers;
@@ -90,7 +92,8 @@ static int wsgi_server_listen(wsgi_config_t *c, wsgi_config_option_t *o)
 }
 
 
-static int wsgi_worker_connections(wsgi_config_t *c, wsgi_config_option_t *o)
+static int
+wsgi_worker_connections(wsgi_config_t *c, wsgi_config_option_t *o)
 {
     wsgi_http_ctx_t *ctx;
     wsgi_list_t *servers;
@@ -116,7 +119,8 @@ static int wsgi_worker_connections(wsgi_config_t *c, wsgi_config_option_t *o)
 }
 
 
-static void *wsgi_http_create(wsgi_cycle_t *cycle)
+static void *
+wsgi_http_create(wsgi_cycle_t *cycle)
 {
     wsgi_http_ctx_t *ctx;
 
@@ -131,7 +135,8 @@ static void *wsgi_http_create(wsgi_cycle_t *cycle)
 }
 
 
-static int wsgi_http_init(wsgi_cycle_t *cycle, void *c)
+static int
+wsgi_http_init(wsgi_cycle_t *cycle, void *c)
 {
     u_int n;
     wsgi_http_ctx_t *ctx;
@@ -180,7 +185,8 @@ static int wsgi_http_init(wsgi_cycle_t *cycle, void *c)
 }
 
 
-static int wsgi_http_shutdown(wsgi_cycle_t *cycle, void *c)
+static int
+wsgi_http_shutdown(wsgi_cycle_t *cycle, void *c)
 {
     u_int n;
     wsgi_http_ctx_t *ctx;

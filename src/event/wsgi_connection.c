@@ -2,7 +2,8 @@
 #include <wsgi_event.h>
 
 
-void wsgi_connection_init(wsgi_connection_t *c, wsgi_gc_t *gc)
+void
+wsgi_connection_init(wsgi_connection_t *c, wsgi_gc_t *gc)
 {
     c->log = gc->log;
     c->gc = gc;
@@ -11,20 +12,23 @@ void wsgi_connection_init(wsgi_connection_t *c, wsgi_gc_t *gc)
 }
 
 
-void wsgi_connection_reset(wsgi_connection_t *c)
+void
+wsgi_connection_reset(wsgi_connection_t *c)
 {
     wsgi_gc_reset(c->gc);
     wsgi_socket_init(&c->socket, c->log);
 }
 
 
-int wsgi_connection_get_handle(void *self)
+int
+wsgi_connection_get_handle(void *self)
 {
     return ((wsgi_connection_t *) self)->socket.fd;
 }
 
 
-int wsgi_connection_close(wsgi_connection_t *c)
+int
+wsgi_connection_close(wsgi_connection_t *c)
 {
     if (c->socket.fd == -1) {
         return WSGI_ERROR;

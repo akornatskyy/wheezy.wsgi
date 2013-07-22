@@ -24,7 +24,8 @@ static wsgi_signal_t signals[] = {
 };
 
 
-int wsgi_signal_init(wsgi_log_t *log)
+int
+wsgi_signal_init(wsgi_log_t *log)
 {
     wsgi_signal_t *s;
     struct sigaction sa;
@@ -44,7 +45,8 @@ int wsgi_signal_init(wsgi_log_t *log)
     return WSGI_OK;
 }
 
-void wsgi_signal_shutdown_handler(int signo)
+void
+wsgi_signal_shutdown_handler(int signo)
 {
     // TODO: add logging of signal received
     wsgi_signal_shutdown = 1;

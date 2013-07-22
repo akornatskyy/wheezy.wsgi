@@ -10,7 +10,8 @@ static void wsgi_config_yaml_parse_error(yaml_parser_t *parser,
     const wsgi_log_t *log);
 
 
-int wsgi_config_load(wsgi_config_t *c, const u_char *filename)
+int
+wsgi_config_load(wsgi_config_t *c, const u_char *filename)
 {
     u_int s;
     FILE *f;
@@ -57,8 +58,8 @@ int wsgi_config_load(wsgi_config_t *c, const u_char *filename)
 }
 
 
-static int wsgi_config_yaml_parse(
-    wsgi_config_t *c, yaml_parser_t *parser, u_int block)
+static int
+wsgi_config_yaml_parse(wsgi_config_t *c, yaml_parser_t *parser, u_int block)
 {
     u_int done, key_found;
     yaml_event_t event;
@@ -177,8 +178,8 @@ failed:
 }
 
 
-static void wsgi_config_yaml_parse_error(
-        yaml_parser_t *parser, const wsgi_log_t *log)
+static void
+wsgi_config_yaml_parse_error(yaml_parser_t *parser, const wsgi_log_t *log)
 {
     switch (parser->error)
     {

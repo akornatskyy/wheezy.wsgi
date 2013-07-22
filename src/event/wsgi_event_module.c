@@ -27,7 +27,8 @@ wsgi_module_t event_module = {
 };
 
 
-static int wsgi_events(wsgi_config_t *c, wsgi_config_option_t *o)
+static int
+wsgi_events(wsgi_config_t *c, wsgi_config_option_t *o)
 {
     wsgi_event_ctx_t *ctx;
 
@@ -44,7 +45,8 @@ static int wsgi_events(wsgi_config_t *c, wsgi_config_option_t *o)
 }
 
 
-static void *wsgi_event_create(wsgi_cycle_t *cycle)
+static void *
+wsgi_event_create(wsgi_cycle_t *cycle)
 {
     wsgi_event_ctx_t *ctx;
 
@@ -56,7 +58,8 @@ static void *wsgi_event_create(wsgi_cycle_t *cycle)
 }
 
 
-static int wsgi_event_init(wsgi_cycle_t *cycle, void *c)
+static int
+wsgi_event_init(wsgi_cycle_t *cycle, void *c)
 {
     wsgi_event_ctx_t *ctx;
     wsgi_event_loop_t *l;
@@ -73,7 +76,8 @@ static int wsgi_event_init(wsgi_cycle_t *cycle, void *c)
 }
 
 
-static int wsgi_event_shutdown(wsgi_cycle_t *cycle, void *c)
+static int
+wsgi_event_shutdown(wsgi_cycle_t *cycle, void *c)
 {
     wsgi_event_ctx_t *ctx;
     wsgi_reactor_t *reactor;
