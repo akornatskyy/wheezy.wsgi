@@ -134,7 +134,7 @@ wsgi_socket_close(wsgi_socket_t *s)
 
         if (close(fd) == -1) {
             wsgi_log_error(s->log, WSGI_LOG_SOURCE_SOCKET,
-                           "socket close: %s, errno %d: %s",
+                           "socket close, fd: %s, errno %d: %s",
                            fd, errno, strerror(errno));
         }
     }
