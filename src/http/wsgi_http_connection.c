@@ -23,7 +23,12 @@ wsgi_http_connection_open(wsgi_connection_t *c)
         return WSGI_ERROR;
     }
 
-    return WSGI_OK;
+    c->request = wsgi_http_request_create(c->gc, 1024);
+    if (c->request == NULL) {
+        return WSGI_ERROR;
+    }
+
+    return wsgi_http_connection_handle_read(c);
 }
 
 
@@ -87,31 +92,48 @@ wsgi_http_connection_pool_close(wsgi_pool_t *p)
 static int
 wsgi_http_connection_handle_read(void *self)
 {
-    ssize_t n;
-    size_t size;
-    u_char buf[512];
+    ssize_t n, size;
     wsgi_connection_t *c;
+    wsgi_http_request_t *r;
 
     c = self;
-    size = 512;
+    r = c->request;
 
     wsgi_log_debug(c->log, WSGI_LOG_SOURCE_HTTP,
                    "handling request for connection: %p",
                    c);
 
-    n = recv(c->socket.fd, buf, size, 0);
+    for (;;) {
+        size = r->buffer_end - r->buffer_last;
+        n = recv(c->socket.fd, r->buffer_last, size, 0 /* flags */);
 
-    wsgi_log_debug(c->log, WSGI_LOG_SOURCE_HTTP,
-                   "recv, fd: %d, %d of %d",
-                   c->socket.fd, n, size);
-
-    // The return value will be 0 when the peer has performed an
-    // orderly shutdown.
-    if (n == 0) {
         wsgi_log_debug(c->log, WSGI_LOG_SOURCE_HTTP,
-                       "connection %p closed by peer, fd: %d",
-                       c, c->socket.fd);
-        return wsgi_http_connection_close(c);
+                       "recv, fd: %d, %d of %d",
+                       c->socket.fd, n, r->buffer_end - r->buffer_last);
+
+        // The return value will be 0 when the peer has performed an
+        // orderly shutdown.
+        if (n == 0) {
+            wsgi_log_debug(c->log, WSGI_LOG_SOURCE_HTTP,
+                           "connection %p closed by peer, fd: %d",
+                           c, c->socket.fd);
+            return wsgi_http_connection_close(c);
+        }
+
+        if (n == -1) {
+            wsgi_log_error(c->log, WSGI_LOG_SOURCE_HTTP,
+                           "recv, fd: %d, errno %d: %s",
+                           c, c->socket.fd, errno, strerror(errno));
+            return wsgi_http_connection_close(c);
+        }
+
+        r->buffer_last += n;
+
+        if (r->handle_read(r) != WSGI_OK) {
+            return WSGI_ERROR;
+        }
+
+        if (n < size) break;
     }
 
     return WSGI_OK;

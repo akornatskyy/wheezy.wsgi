@@ -1,0 +1,16 @@
+POST /en/signin HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Content-Length: 45
+Accept: application/json, text/javascript, */*; q=0.01
+Origin: http://localhost:8080
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.71 Safari/537.36
+Content-Type: application/x-www-form-urlencoded
+DNT: 1
+Referer: http://localhost:8080/en/signin
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: uk,en-US;q=0.8,en;q=0.6
+Cookie: _x=xWuPboE7Tx-HCDhlKIxePw
+
+_x=xWuPboE7Tx-HCDhlKIxePw&username=&password=
