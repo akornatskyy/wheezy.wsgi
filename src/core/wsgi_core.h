@@ -17,6 +17,9 @@ typedef struct wsgi_socket_s wsgi_socket_t;
 #define WSGI_OK                     0
 #define WSGI_ERROR                  -1
 
+#define CR                          (u_char) 13
+#define LF                          (u_char) 10
+
 #define WSGI_LOG_SOURCE_CORE        1 << 0
 #define WSGI_LOG_SOURCE_ALLOC       1 << 1
 #define WSGI_LOG_SOURCE_GC          1 << 2
