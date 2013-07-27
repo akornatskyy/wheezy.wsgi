@@ -28,6 +28,11 @@ wsgi_http_request_create(wsgi_gc_t *gc, u_int buffer_size)
     r->buffer_end = b + buffer_size;
     r->handle_read = wsgi_http_request_parse_request_line;
 
+    if (wsgi_list_init(&r->headers, gc, WSGI_HTTP_REQUEST_HEADERS_CAPACITY,
+                       sizeof(wsgi_http_header_pair_t)) != WSGI_OK) {
+        return NULL;
+    }
+
     return r;
 }
 
@@ -36,7 +41,7 @@ static int wsgi_http_request_parse_request_line(wsgi_http_request_t *r)
 {
     u_char *p;
     enum {
-        START = 0, METHOD, SPACE1, URI, SPACE2, VERSION, END
+        START = 0, METHOD, SPACE1, URI, MARK, QUERY, SPACE2, PROTOCOL, END
     } state;
 
     wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
@@ -51,27 +56,65 @@ static int wsgi_http_request_parse_request_line(wsgi_http_request_t *r)
                 break;
 
             case METHOD:
-                if (*p == ' ') { *p = '\0'; state = SPACE1; }
+                if (*p == ' ') {
+                    *p = '\0'; state = SPACE1;
+                    wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+                                   "  REQUEST_METHOD: %s",
+                                   r->method);
+                }
+
                 break;
 
             case SPACE1:
-                r->uri = p; state = URI;
+                r->path_info = p; state = URI;
                 break;
 
             case URI:
-                if (*p == ' ') { *p = '\0'; state = SPACE2; }
+                switch (*p) {
+                    case '?':
+                        *p = '\0'; state = MARK;
+                        break;
+                    case ' ':
+                        r->query_string = (u_char *) "";
+                        *p = '\0'; state = SPACE2;
+                        break;
+                }
+
+                break;
+
+            case MARK:
+                r->query_string = p; state = QUERY;
+                break;
+
+            case QUERY:
+                if (*p == ' ') {
+                    *p = '\0'; state = SPACE2;
+                }
+
                 break;
 
             case SPACE2:
-                r->version = p; state = VERSION;
+                wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+                               "  PATH_INFO: %s, QUERY_STRING: %s",
+                               r->path_info, r->query_string);
+                r->protocol = p; state = PROTOCOL;
                 break;
 
-            case VERSION:
-                if (*p == CR) { *p = '\0'; state = END; }
+            case PROTOCOL:
+                if (*p == CR) {
+                    *p = '\0'; state = END;
+                    wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+                                   "  SERVER_PROTOCOL: %s",
+                                   r->protocol);
+                }
+
                 break;
 
             case END:
                 if (*p == LF) goto done;
+                wsgi_log_error(r->log, WSGI_LOG_SOURCE_HTTP,
+                               "request line: expecting LF after CR, "
+                               "%#x found", *p);
                 return WSGI_ERROR;
         }
     }
@@ -93,6 +136,7 @@ done:
 static int wsgi_http_request_parse_headers(wsgi_http_request_t *r)
 {
     u_char *p, *name, *name_end, *value, *value_end, *pos;
+    wsgi_http_header_pair_t *h;
     enum {
         START = 0, NAME, COLON, SPACE, VALUE, END, DONE
     } state;
@@ -147,10 +191,29 @@ static int wsgi_http_request_parse_headers(wsgi_http_request_t *r)
                 }
 
                 *name_end = '\0'; *value_end = '\0';
+                state = START;
+
+                h = wsgi_list_append(&r->headers);
+                h->name = name; h->value = value;
+
+                switch (name_end - name) {
+                    case 12:
+                        if (*name == 'C' && *(name + 9) == 'y') {
+                            r->content_type = value;
+                        }
+
+                        break;
+                    case 14:
+                        if (*name == 'C' && *(name + 9) == 'e') {
+                            r->content_length = value;
+                        }
+
+                        break;
+                }
+
                 wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
                                "  %s: %s",
                                name, value);
-                state = START;
                 break;
 
             case DONE:
@@ -167,7 +230,15 @@ static int wsgi_http_request_parse_headers(wsgi_http_request_t *r)
     return WSGI_OK;
 
 done:
+
+    if (r->content_length || r->content_type) {
+        wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+                       "CONTENT_LENGTH: %s, CONTENT_TYPE: %s",
+                       r->content_length, r->content_type);
+    }
+
     r->handle_read = wsgi_http_request_process;
+
     return wsgi_http_request_process(r);
 }
 

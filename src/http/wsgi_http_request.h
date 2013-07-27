@@ -2,6 +2,14 @@
 #define _WSGI_HTTP_REQUEST_H_INCLUDED_
 
 
+#define WSGI_HTTP_REQUEST_HEADERS_CAPACITY 12
+
+
+struct wsgi_http_header_pair_s {
+    u_char                  *name;
+    u_char                  *value;
+};
+
 struct wsgi_http_request_s {
     const wsgi_log_t        *log;
     u_char                  *buffer_start;
@@ -10,11 +18,17 @@ struct wsgi_http_request_s {
     u_char                  *buffer_end;
     int                     (*handle_read)(wsgi_http_request_t *r);
 
-    u_char                  state;
-
     u_char                  *method;
-    u_char                  *uri;
-    u_char                  *version;
+    u_char                  *path_info;
+    u_char                  *query_string;
+    u_char                  *protocol;
+
+    u_char                  *content_type;
+    u_char                  *content_length;
+
+    wsgi_list_t             headers;
+
+    u_char                  state;
 };
 
 
