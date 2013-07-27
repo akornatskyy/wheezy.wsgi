@@ -6,7 +6,6 @@
 
 
 struct wsgi_connection_s {
-    const wsgi_log_t        *log;
     wsgi_gc_t               *gc;
     wsgi_acceptor_t         *acceptor;
     wsgi_event_handler_t    event_handler;

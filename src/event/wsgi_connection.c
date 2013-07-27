@@ -5,10 +5,8 @@
 void
 wsgi_connection_init(wsgi_connection_t *c, wsgi_gc_t *gc)
 {
-    c->log = gc->log;
     c->gc = gc;
-
-    wsgi_socket_init(&c->socket, c->log);
+    wsgi_socket_init(&c->socket, gc->log);
 }
 
 
@@ -16,7 +14,7 @@ void
 wsgi_connection_reset(wsgi_connection_t *c)
 {
     wsgi_gc_reset(c->gc);
-    wsgi_socket_init(&c->socket, c->log);
+    wsgi_socket_init(&c->socket, c->gc->log);
 }
 
 

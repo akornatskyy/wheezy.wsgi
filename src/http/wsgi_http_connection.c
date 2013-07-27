@@ -10,7 +10,7 @@ wsgi_http_connection_open(wsgi_connection_t *c)
 {
     wsgi_event_handler_t *h;
 
-    wsgi_log_debug(c->log, WSGI_LOG_SOURCE_HTTP,
+    wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                    "opening connection: %p, fd: %d",
                    c, c->socket.fd);
 
@@ -39,7 +39,7 @@ wsgi_http_connection_close(wsgi_connection_t *c)
         return WSGI_OK;
     }
 
-    wsgi_log_debug(c->log, WSGI_LOG_SOURCE_HTTP,
+    wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                    "closing connection: %p, fd: %d",
                    c, c->socket.fd);
 
@@ -99,7 +99,7 @@ wsgi_http_connection_handle_read(void *self)
     c = self;
     r = c->request;
 
-    wsgi_log_debug(c->log, WSGI_LOG_SOURCE_HTTP,
+    wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                    "connection: %p, handling request: %p",
                    c, r);
 
@@ -107,21 +107,21 @@ wsgi_http_connection_handle_read(void *self)
         size = r->buffer_end - r->buffer_last;
         n = recv(c->socket.fd, r->buffer_last, size, 0 /* flags */);
 
-        wsgi_log_debug(c->log, WSGI_LOG_SOURCE_HTTP,
+        wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                        "recv, fd: %d, %d of %d",
                        c->socket.fd, n, r->buffer_end - r->buffer_last);
 
         // The return value will be 0 when the peer has performed an
         // orderly shutdown.
         if (n == 0) {
-            wsgi_log_debug(c->log, WSGI_LOG_SOURCE_HTTP,
+            wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                            "connection %p closed by peer, fd: %d",
                            c, c->socket.fd);
             return wsgi_http_connection_close(c);
         }
 
         if (n == -1) {
-            wsgi_log_error(c->log, WSGI_LOG_SOURCE_HTTP,
+            wsgi_log_error(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                            "recv, fd: %d, errno %d: %s",
                            c, c->socket.fd, errno, strerror(errno));
             return wsgi_http_connection_close(c);
