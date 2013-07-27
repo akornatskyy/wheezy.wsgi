@@ -100,8 +100,8 @@ wsgi_http_connection_handle_read(void *self)
     r = c->request;
 
     wsgi_log_debug(c->log, WSGI_LOG_SOURCE_HTTP,
-                   "handling request for connection: %p",
-                   c);
+                   "connection: %p, handling request: %p",
+                   c, r);
 
     for (;;) {
         size = r->buffer_end - r->buffer_last;

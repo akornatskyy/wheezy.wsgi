@@ -39,6 +39,10 @@ static int wsgi_http_request_parse_request_line(wsgi_http_request_t *r)
         START = 0, METHOD, SPACE1, URI, SPACE2, VERSION, END
     } state;
 
+    wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+                   "request: %p, parsing request line",
+                   r);
+
     state = r->state;
     for (p = r->buffer_pos; p < r->buffer_last; p++) {
         switch (state) {
@@ -93,6 +97,10 @@ static int wsgi_http_request_parse_headers(wsgi_http_request_t *r)
         START = 0, NAME, COLON, SPACE, VALUE, END, DONE
     } state;
 
+    wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+                   "request: %p, parsing headers",
+                   r);
+
     name = name_end = value = value_end = NULL;
     state = START;
     for (p = pos = r->buffer_pos; p < r->buffer_last; p++) {
@@ -140,7 +148,7 @@ static int wsgi_http_request_parse_headers(wsgi_http_request_t *r)
 
                 *name_end = '\0'; *value_end = '\0';
                 wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
-                               "header: %s: %s",
+                               "  %s: %s",
                                name, value);
                 state = START;
                 break;
@@ -166,5 +174,8 @@ done:
 
 static int wsgi_http_request_process(wsgi_http_request_t *r)
 {
+    wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+                   "request: %p, processing",
+                   r);
     return WSGI_OK;
 }
