@@ -109,7 +109,7 @@ wsgi_http_connection_handle_read(void *self)
 
         wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                        "recv, fd: %d, %d of %d",
-                       c->socket.fd, n, r->buffer_end - r->buffer_last);
+                       c->socket.fd, n, size);
 
         // The return value will be 0 when the peer has performed an
         // orderly shutdown.
@@ -130,7 +130,7 @@ wsgi_http_connection_handle_read(void *self)
         r->buffer_last += n;
 
         if (r->handle_read(r) != WSGI_OK) {
-            return WSGI_ERROR;
+            return wsgi_http_connection_close(c);
         }
 
         if (n < size) break;
