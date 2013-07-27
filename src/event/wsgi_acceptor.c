@@ -69,6 +69,7 @@ wsgi_acceptor_close(wsgi_acceptor_t *a)
             wsgi_log_error(a->log, WSGI_LOG_SOURCE_SOCKET,
                            "unlink: %s, errno %d: %s",
                            a->socket.addr->name, errno, strerror(errno));
+            return WSGI_ERROR;
         }
     }
 
