@@ -159,9 +159,9 @@ wsgi_epoll_wait(void *self, int timeout)
                        h->self, events);
 
         if (events & (EPOLLERR|EPOLLHUP)) {
-            wsgi_log_debug(e->log, WSGI_LOG_SOURCE_EVENT,
-                           "epoll wait error for %p, fd: %d",
-                           h->self, h->get_handle(h->self));
+            wsgi_log_warn(e->log, WSGI_LOG_SOURCE_EVENT,
+                          "epoll wait error for %p, fd: %d",
+                          h->self, h->get_handle(h->self));
         }
 
         h->handle_event(h->self);
