@@ -14,6 +14,19 @@ static int wsgi_http_init(wsgi_cycle_t *cycle, void *ctx);
 static int wsgi_http_shutdown(wsgi_cycle_t *cycle, void *ctx);
 
 
+typedef struct {
+    wsgi_gc_t           *gc;
+    wsgi_list_t         servers;
+} wsgi_http_ctx_t;
+
+typedef struct {
+    uint                worker_connections;
+    wsgi_addr_t         *listen;
+    wsgi_pool_t         *pool;
+    wsgi_acceptor_t     *acceptor;
+} wsgi_http_server_t;
+
+
 extern wsgi_module_t event_module;
 
 static wsgi_config_def_t config_defs[] = {
@@ -146,7 +159,7 @@ wsgi_http_init(wsgi_cycle_t *cycle, void *c)
     wsgi_acceptor_t *acceptor;
 
     ctx = c;
-    reactor = ((wsgi_event_ctx_t *)(cycle->ctx[event_module.id]))->reactor;
+    reactor = wsgi_event_ctx_get_reactor(cycle->ctx[event_module.id]);
 
     server = ctx->servers.items;
     for (n = ctx->servers.length; n-- > 0; server++) {

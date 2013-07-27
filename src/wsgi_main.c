@@ -32,7 +32,7 @@ run_cycle(wsgi_log_t *log)
         return 1;
     }
 
-    reactor = ((wsgi_event_ctx_t *)(cycle->ctx[event_module.id]))->reactor;
+    reactor = wsgi_event_ctx_get_reactor(cycle->ctx[event_module.id]);
     wsgi_reactor_wait_for_events(reactor);
 
     wsgi_cycle_shutdown(cycle);

@@ -10,6 +10,12 @@ static int wsgi_event_init(wsgi_cycle_t *cycle, void *ctx);
 static int wsgi_event_shutdown(wsgi_cycle_t *cycle, void *ctx);
 
 
+struct wsgi_event_ctx_s {
+    wsgi_gc_t           *gc;
+    uint                events;
+    wsgi_reactor_t      *reactor;
+};
+
 static wsgi_config_def_t config_defs[] = {
     { "events",
       WSGI_CONFIG_DEF_ROOT,
@@ -25,6 +31,14 @@ wsgi_module_t event_module = {
     wsgi_event_init,
     wsgi_event_shutdown
 };
+
+
+wsgi_reactor_t*
+wsgi_event_ctx_get_reactor(wsgi_event_ctx_t* ctx)
+{
+    assert(ctx->reactor != NULL);
+    return ctx->reactor;
+}
 
 
 static int
@@ -53,6 +67,7 @@ wsgi_event_create(wsgi_cycle_t *cycle)
     ctx = wsgi_gc_malloc(cycle->gc, sizeof(wsgi_event_ctx_t));
     ctx->gc = cycle->gc;
     ctx->events = 16;
+    ctx->reactor = NULL;
 
     return ctx;
 }

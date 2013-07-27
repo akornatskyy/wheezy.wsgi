@@ -10,7 +10,7 @@ static int wsgi_epoll_wait(void *self, int timeout);
 static int wsgi_epoll_close(void *self);
 
 
-typedef struct wsgi_epoll_s {
+typedef struct {
     const wsgi_log_t        *log;
     wsgi_event_loop_t       loop;
     int                     fd;
