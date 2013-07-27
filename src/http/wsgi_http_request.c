@@ -10,16 +10,16 @@ static int wsgi_http_request_process(wsgi_http_request_t *r);
 wsgi_http_request_t *
 wsgi_http_request_create(wsgi_gc_t *gc, u_int buffer_size)
 {
-    wsgi_http_request_t *r;
     u_char *b;
+    wsgi_http_request_t *r;
 
-    r = wsgi_gc_calloc(gc, sizeof(wsgi_http_request_t));
-    if (r == NULL) {
+    b = wsgi_gc_malloc_ref(gc, buffer_size);
+    if (b == NULL) {
         return NULL;
     }
 
-    b = wsgi_gc_malloc(gc, buffer_size);
-    if (b == NULL) {
+    r = wsgi_gc_calloc(gc, sizeof(wsgi_http_request_t));
+    if (r == NULL) {
         return NULL;
     }
 

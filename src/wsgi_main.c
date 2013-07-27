@@ -50,9 +50,9 @@ main(int argc, char *argv[])
     log = wsgi_log_init();
     log->log_level = WSGI_LOG_DEBUG;
     log->log_source = WSGI_LOG_SOURCE_CORE
-        //| WSGI_LOG_SOURCE_ALLOC
-        //| WSGI_LOG_SOURCE_GC
-        //| WSGI_LOG_SOURCE_LIST
+        | WSGI_LOG_SOURCE_ALLOC
+        | WSGI_LOG_SOURCE_GC
+        | WSGI_LOG_SOURCE_LIST
         | WSGI_LOG_SOURCE_POOL
         | WSGI_LOG_SOURCE_CONFIG
         | WSGI_LOG_SOURCE_SOCKET

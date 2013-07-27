@@ -11,7 +11,7 @@ wsgi_cycle_create(wsgi_log_t* log)
     wsgi_gc_t *gc;
     wsgi_cycle_t *cycle;
 
-    gc = wsgi_gc_create(512, log);
+    gc = wsgi_gc_create(256, log);
     cycle = wsgi_gc_malloc(gc, sizeof(wsgi_cycle_t));
     cycle->log = log;
     cycle->gc = gc;

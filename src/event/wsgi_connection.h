@@ -2,7 +2,7 @@
 #define _WSGI_CONNECTION_H_INCLUDED_
 
 
-#define WSGI_CONNECTION_GC_SIZE 2048
+#define WSGI_CONNECTION_GC_SIZE 256
 
 
 struct wsgi_connection_s {
