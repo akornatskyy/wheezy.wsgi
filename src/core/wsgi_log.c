@@ -10,7 +10,8 @@
 static const char *log_level[] = {
     "\x1B[31m[EMERG]",
     "\x1B[31;1m[ERROR]",
-    "\x1B[33;1m[INFO]",
+    "\x1B[33;1m[WARNI]",
+    "\x1B[32;1m[INFOR]",
     "\x1B[36m[DEBUG]"
 };
 
@@ -23,7 +24,8 @@ static const char *log_level[] = {
 static const char *log_level[] = {
     "[EMERG]",
     "[ERROR]",
-    "[INFO]",
+    "[WARNI]",
+    "[INFOR]",
     "[DEBUG]"
 };
 

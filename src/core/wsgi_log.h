@@ -4,8 +4,9 @@
 
 #define WSGI_LOG_EMERG          0
 #define WSGI_LOG_ERROR          1
-#define WSGI_LOG_INFO           2
-#define WSGI_LOG_DEBUG          3
+#define WSGI_LOG_WARN           2
+#define WSGI_LOG_INFO           3
+#define WSGI_LOG_DEBUG          4
 
 #define WSGI_LOG_SOURCE_ALL     0x7FF
 #define WSGI_LOG_MAX_SOURCE     WSGI_LOG_SOURCE_ALL
@@ -33,6 +34,10 @@ void wsgi_log_set_source(u_int source, const char *name);
 #define wsgi_log_error(log, source, ...) \
     if (log->log_level >= WSGI_LOG_ERROR && log->log_source & source) \
         wsgi_log_msg(log, WSGI_LOG_ERROR, source, __VA_ARGS__)
+
+#define wsgi_log_warn(log, source, ...) \
+    if (log->log_level >= WSGI_LOG_WARN && log->log_source & source) \
+        wsgi_log_msg(log, WSGI_LOG_WARN, source, __VA_ARGS__)
 
 #define wsgi_log_info(log, source, ...) \
     if (log->log_level >= WSGI_LOG_INFO && log->log_source & source) \
