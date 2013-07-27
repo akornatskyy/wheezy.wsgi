@@ -17,9 +17,9 @@ wsgi_config_load(wsgi_config_t *c, const u_char *filename)
     FILE *f;
     yaml_parser_t parser;
 
-    wsgi_log_debug(c->log, WSGI_LOG_SOURCE_CONFIG,
-                   "loading \"%s\"",
-                   filename);
+    wsgi_log_info(c->log, WSGI_LOG_SOURCE_CONFIG,
+                  "loading \"%s\"",
+                  filename);
     f = fopen((const char *) filename, "r");
     if (f == NULL) {
         wsgi_log_error(c->log, WSGI_LOG_SOURCE_CONFIG,
