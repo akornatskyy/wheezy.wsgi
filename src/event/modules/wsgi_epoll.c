@@ -4,6 +4,7 @@
 #include <wsgi_epoll.h>
 
 
+static void *wsgi_epoll_module_create(wsgi_cycle_t *cycle);
 static int wsgi_epoll_add(void *self, wsgi_event_handler_t *h);
 static int wsgi_epoll_del(void *self, wsgi_event_handler_t *h);
 static int wsgi_epoll_wait(void *self, int timeout);
@@ -18,6 +19,16 @@ typedef struct {
     int                     events_length;
 } wsgi_epoll_t;
 
+
+extern wsgi_module_t event_module;
+
+wsgi_module_t epoll_module = {
+    "epoll", -1,
+    NULL,
+    wsgi_epoll_module_create,
+    NULL,
+    NULL
+};
 
 wsgi_event_loop_t *
 wsgi_epoll_create(wsgi_gc_t *gc, u_int length)
@@ -57,6 +68,19 @@ wsgi_epoll_create(wsgi_gc_t *gc, u_int length)
     l->close = wsgi_epoll_close;
 
     return l;
+}
+
+
+static void *
+wsgi_epoll_module_create(wsgi_cycle_t *cycle)
+{
+    if (wsgi_event_ctx_add_event_loop(
+            cycle->ctx[event_module.id],
+            epoll_module.name, wsgi_epoll_create) != WSGI_OK) {
+        return NULL;
+    }
+
+    return cycle;
 }
 
 

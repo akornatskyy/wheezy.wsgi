@@ -3,10 +3,12 @@
 
 
 extern wsgi_module_t event_module;
+extern wsgi_module_t epoll_module;
 extern wsgi_module_t http_module;
 
 wsgi_module_t* modules[] = {
     &event_module,
+    &epoll_module,
     &http_module,
 };
 
@@ -50,9 +52,11 @@ main(int argc, char *argv[])
     log = wsgi_log_init();
     log->log_level = WSGI_LOG_DEBUG;
     log->log_source = WSGI_LOG_SOURCE_CORE
+#if 1
         | WSGI_LOG_SOURCE_ALLOC
         | WSGI_LOG_SOURCE_GC
         | WSGI_LOG_SOURCE_LIST
+#endif
         | WSGI_LOG_SOURCE_POOL
         | WSGI_LOG_SOURCE_CONFIG
         | WSGI_LOG_SOURCE_SOCKET

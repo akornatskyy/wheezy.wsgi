@@ -1,4 +1,4 @@
-
+use: epoll
 events: 16
 servers:
 - listen: unix:/tmp/sample.sock
