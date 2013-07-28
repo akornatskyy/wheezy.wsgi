@@ -8,7 +8,7 @@
 #define WSGI_LOG_INFO           3
 #define WSGI_LOG_DEBUG          4
 
-#define WSGI_LOG_SOURCE_ALL     0x7FF
+#define WSGI_LOG_SOURCE_ALL     0xFFFFF
 #define WSGI_LOG_MAX_SOURCE     WSGI_LOG_SOURCE_ALL
 #define WSGI_MAX_MSG            156
 

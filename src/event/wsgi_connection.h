@@ -2,9 +2,6 @@
 #define _WSGI_CONNECTION_H_INCLUDED_
 
 
-#define WSGI_CONNECTION_GC_SIZE 256
-
-
 struct wsgi_connection_s {
     wsgi_gc_t               *gc;
     wsgi_acceptor_t         *acceptor;

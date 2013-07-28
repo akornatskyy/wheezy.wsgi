@@ -157,7 +157,7 @@ wsgi_event_module_init(wsgi_cycle_t *cycle, void *c)
     }
 
     if (ctx->events == 0) {
-        ctx->events = 16;
+        ctx->events = WSGI_DEFAULT_EVENTS;
     }
 
     l = ctx->event_loop_factory->create(cycle->gc, ctx->events);

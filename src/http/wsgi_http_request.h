@@ -2,9 +2,6 @@
 #define _WSGI_HTTP_REQUEST_H_INCLUDED_
 
 
-#define WSGI_HTTP_REQUEST_HEADERS_CAPACITY 12
-
-
 struct wsgi_http_header_pair_s {
     u_char                  *name;
     u_char                  *value;

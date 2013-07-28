@@ -28,7 +28,8 @@ wsgi_http_request_create(wsgi_gc_t *gc, u_int buffer_size)
     r->buffer_end = b + buffer_size;
     r->handle_read = wsgi_http_request_parse_request_line;
 
-    if (wsgi_list_init(&r->headers, gc, WSGI_HTTP_REQUEST_HEADERS_CAPACITY,
+    if (wsgi_list_init(&r->headers, gc,
+                       WSGI_DEFAULT_REQUEST_HEADERS_CAPACITY,
                        sizeof(wsgi_http_header_pair_t)) != WSGI_OK) {
         return NULL;
     }

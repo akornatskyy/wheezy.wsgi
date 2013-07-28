@@ -27,9 +27,6 @@ typedef struct wsgi_socket_s wsgi_socket_t;
 #define WSGI_LOG_SOURCE_POOL        1 << 4
 #define WSGI_LOG_SOURCE_CONFIG      1 << 5
 #define WSGI_LOG_SOURCE_SOCKET      1 << 6
-#define WSGI_LOG_SOURCE_EVENT       1 << 7
-#define WSGI_LOG_SOURCE_ACCEPTOR    1 << 8
-#define WSGI_LOG_SOURCE_HTTP        1 << 9
 
 
 #include <wsgi_os.h>

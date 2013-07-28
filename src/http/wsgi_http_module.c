@@ -170,7 +170,7 @@ wsgi_http_module_init(wsgi_cycle_t *cycle, void *c)
     server = ctx->servers.items;
     for (n = ctx->servers.length; n-- > 0; server++) {
         if (server->worker_connections == 0) {
-            server->worker_connections = 16;
+            server->worker_connections = WSGI_DEFAULT_WORKER_CONNECTIONS;
         }
 
         pool = wsgi_pool_create(ctx->gc,

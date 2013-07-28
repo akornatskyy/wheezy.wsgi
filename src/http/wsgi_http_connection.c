@@ -23,7 +23,8 @@ wsgi_http_connection_open(wsgi_connection_t *c)
         return WSGI_ERROR;
     }
 
-    c->request = wsgi_http_request_create(c->gc, 1024);
+    c->request = wsgi_http_request_create(
+            c->gc, WSGI_DEFAULT_REQUEST_HEADER_BUFFER_SIZE);
     if (c->request == NULL) {
         return WSGI_ERROR;
     }
@@ -59,7 +60,7 @@ wsgi_http_connection_pool_init(wsgi_pool_t *p, wsgi_log_t *log)
                   p->capacity);
 
     for (i = 0, c = p->items; i < p->capacity; i++, c++) {
-        gc = wsgi_gc_create(WSGI_CONNECTION_GC_SIZE, log);
+        gc = wsgi_gc_create(WSGI_DEFAULT_CONNECTION_GC_SIZE, log);
         if (gc == NULL) {
             return WSGI_ERROR;
         }
