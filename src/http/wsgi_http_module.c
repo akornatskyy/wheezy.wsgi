@@ -5,13 +5,16 @@
 #define WSGI_CONFIG_DEF_SERVER 0x20
 
 
-static int wsgi_server_add(wsgi_config_t *c, wsgi_config_option_t *o);
-static int wsgi_server_listen(wsgi_config_t *c, wsgi_config_option_t *o);
-static int wsgi_worker_connections(wsgi_config_t *c, wsgi_config_option_t *o);
+static int wsgi_http_config_server(
+        wsgi_config_t *c, wsgi_config_option_t *o);
+static int wsgi_http_config_server_listen(wsgi_config_t *c,
+        wsgi_config_option_t *o);
+static int wsgi_http_config_server_worker_connections(
+        wsgi_config_t *c, wsgi_config_option_t *o);
 
-static void *wsgi_http_create(wsgi_cycle_t *cycle);
-static int wsgi_http_init(wsgi_cycle_t *cycle, void *ctx);
-static int wsgi_http_shutdown(wsgi_cycle_t *cycle, void *ctx);
+static void *wsgi_http_module_create(wsgi_cycle_t *cycle);
+static int wsgi_http_module_init(wsgi_cycle_t *cycle, void *ctx);
+static int wsgi_http_module_shutdown(wsgi_cycle_t *cycle, void *ctx);
 
 
 typedef struct {
@@ -32,13 +35,13 @@ extern wsgi_module_t event_module;
 static wsgi_config_def_t config_defs[] = {
     { "servers",
       WSGI_CONFIG_DEF_ROOT | WSGI_CONFIG_DEF_SEQUENCE,
-      wsgi_server_add },
+      wsgi_http_config_server },
     { "listen",
       WSGI_CONFIG_DEF_SERVER,
-      wsgi_server_listen },
+      wsgi_http_config_server_listen },
     { "worker_connections",
       WSGI_CONFIG_DEF_SERVER,
-      wsgi_worker_connections },
+      wsgi_http_config_server_worker_connections },
     { 0 }
 };
 
@@ -46,14 +49,15 @@ static wsgi_config_def_t config_defs[] = {
 wsgi_module_t http_module = {
     "http", -1,
     config_defs,
-    wsgi_http_create,
-    wsgi_http_init,
-    wsgi_http_shutdown
+    wsgi_http_module_create,
+    wsgi_http_module_init,
+    wsgi_http_module_shutdown
 };
 
+// region: module config
 
 static int
-wsgi_server_add(wsgi_config_t *c, wsgi_config_option_t *o)
+wsgi_http_config_server(wsgi_config_t *c, wsgi_config_option_t *o)
 {
     wsgi_http_ctx_t *ctx;
     wsgi_http_server_t *server;
@@ -77,7 +81,7 @@ wsgi_server_add(wsgi_config_t *c, wsgi_config_option_t *o)
 
 
 static int
-wsgi_server_listen(wsgi_config_t *c, wsgi_config_option_t *o)
+wsgi_http_config_server_listen(wsgi_config_t *c, wsgi_config_option_t *o)
 {
     wsgi_http_ctx_t *ctx;
     wsgi_list_t *servers;
@@ -106,7 +110,8 @@ wsgi_server_listen(wsgi_config_t *c, wsgi_config_option_t *o)
 
 
 static int
-wsgi_worker_connections(wsgi_config_t *c, wsgi_config_option_t *o)
+wsgi_http_config_server_worker_connections(
+        wsgi_config_t *c, wsgi_config_option_t *o)
 {
     wsgi_http_ctx_t *ctx;
     wsgi_list_t *servers;
@@ -131,9 +136,10 @@ wsgi_worker_connections(wsgi_config_t *c, wsgi_config_option_t *o)
     return WSGI_OK;
 }
 
+// region: module lifetime
 
 static void *
-wsgi_http_create(wsgi_cycle_t *cycle)
+wsgi_http_module_create(wsgi_cycle_t *cycle)
 {
     wsgi_http_ctx_t *ctx;
 
@@ -149,7 +155,7 @@ wsgi_http_create(wsgi_cycle_t *cycle)
 
 
 static int
-wsgi_http_init(wsgi_cycle_t *cycle, void *c)
+wsgi_http_module_init(wsgi_cycle_t *cycle, void *c)
 {
     u_int n;
     wsgi_http_ctx_t *ctx;
@@ -199,7 +205,7 @@ wsgi_http_init(wsgi_cycle_t *cycle, void *c)
 
 
 static int
-wsgi_http_shutdown(wsgi_cycle_t *cycle, void *c)
+wsgi_http_module_shutdown(wsgi_cycle_t *cycle, void *c)
 {
     u_int n;
     wsgi_http_ctx_t *ctx;
