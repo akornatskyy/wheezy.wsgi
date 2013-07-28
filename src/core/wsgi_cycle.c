@@ -120,7 +120,7 @@ wsgi_cycle_lookup_config(void *adapter, wsgi_config_option_t *o)
 
     cycle = adapter;
     for (i = 0; i < modules_count; i++) {
-        for (d = modules[i]->defs; d->name; d++) {
+        for (d = modules[i]->defs; d && d->name; d++) {
             if ((d->flags & o->block)
                 && strcmp((char *)d->name, (char *)o->value) == 0) {
                 o->def = d;
