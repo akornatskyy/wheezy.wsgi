@@ -3,8 +3,8 @@
 define() {
 
     cat << END >> $AUTO_H
-#ifndef $1
-#define $1 1
+#ifndef WSGI_$1
+#define WSGI_$1 1
 #endif
 END
 
@@ -17,24 +17,30 @@ cat << EOF > $AUTO_H
 #define _WSGI_AUTO_H_INCLUDED_
 
 
+#define WSGI_COMPILER "`$CC -v 2>&1 | grep version`"
+
 EOF
+
+if [ $DEBUG ]; then
+    define DEBUG
+fi
 
 case $SYSTEM in
 
     Darwin)
-        define USE_KQUEUE
+        define HAVE_KQUEUE
         incs="$incs -I /opt/local/include"
         libs="$libs -L /opt/local/lib"
     ;;
 
     FreeBSD)
-        define USE_KQUEUE
+        define HAVE_KQUEUE
         incs="$incs -I /usr/local/include"
         libs="$libs -L /usr/local/lib"
     ;;
 
     Linux)
-        define USE_EPOLL
+        define HAVE_EPOLL
         modules="$modules epoll"
     ;;
 

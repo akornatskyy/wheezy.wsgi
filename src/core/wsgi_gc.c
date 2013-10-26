@@ -43,9 +43,11 @@ wsgi_gc_destroy(wsgi_gc_t *gc)
     const wsgi_log_t *log;
     log = gc->log;
     u_int c;
+
+    c = 0;
 #endif
 
-    for (c = 0, r = gc->ref; r; r = r->next) {
+    for (r = gc->ref; r; r = r->next) {
         if (r->ref1 != NULL) {
             wsgi_free(r->ref1);
 #if WSGI_DEBUG

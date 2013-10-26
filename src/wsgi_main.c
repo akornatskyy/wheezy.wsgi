@@ -44,7 +44,7 @@ main(int argc, char *argv[])
     log = wsgi_log_init();
     log->log_level = WSGI_LOG_DEBUG;
     log->log_source = WSGI_LOG_SOURCE_CORE
-#if 1
+#if WSGI_DEBUG
         | WSGI_LOG_SOURCE_ALLOC
         | WSGI_LOG_SOURCE_GC
         | WSGI_LOG_SOURCE_LIST

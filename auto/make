@@ -28,7 +28,7 @@ cat <<END > $MAKEFILE
 .PHONY: default clean
 .SILENT: clean
 
-CC = cc
+CC = $CC
 LINK = \$(CC)
 CFLAGS = -g -pipe -O -W -Wall -Wno-unused-parameter -Werror
 

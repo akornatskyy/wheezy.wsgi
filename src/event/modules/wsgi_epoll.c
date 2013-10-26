@@ -1,7 +1,7 @@
 
 #include <wsgi_event.h>
 
-#if USE_EPOLL
+#if WSGI_HAVE_EPOLL
 
 #include <sys/epoll.h>
 

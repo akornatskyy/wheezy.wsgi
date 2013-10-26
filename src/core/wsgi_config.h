@@ -2,8 +2,6 @@
 #define _WSGI_CONFIG_H_INCLUDED_
 
 
-#define WSGI_DEBUG                  1
-
 #define WSGI_CONFIG_DEF_SEQUENCE    0x01
 #define WSGI_CONFIG_DEF_ROOT        0x10
 

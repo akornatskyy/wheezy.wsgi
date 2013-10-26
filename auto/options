@@ -1,0 +1,38 @@
+#!/bin/sh
+
+help=
+
+DEBUG=
+CC=${CC:-cc}
+
+for option
+do
+    case "$option" in
+        -*=*) value=`echo "$option" | sed -e 's/.*=//'` ;;
+        *) value="" ;;
+    esac
+
+    case  "$option" in
+        --help)         help=1 ;;
+        --with-debug)   DEBUG=1 ;;
+        --with-cc=*)    CC="$value" ;;
+        *)
+            echo "$0: error: invalid option \"$option\""
+            exit 1
+        ;;
+    esac
+done
+
+if [ $help ]; then
+
+    cat << END
+usage: $0 [...]
+
+optional arguments:
+    --help                show this help message
+    --with-debug          enable debug logging
+    --with-cc=PATH        set C compiler pathname
+END
+
+    exit 1
+fi
