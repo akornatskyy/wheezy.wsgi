@@ -32,7 +32,7 @@ static wsgi_config_def_t config_defs[] = {
     { "events",
       WSGI_CONFIG_DEF_ROOT,
       wsgi_event_config_events },
-    { 0 }
+    { 0, 0, 0 }
 };
 
 

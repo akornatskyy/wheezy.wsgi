@@ -42,7 +42,7 @@ static wsgi_config_def_t config_defs[] = {
     { "worker_connections",
       WSGI_CONFIG_DEF_SERVER,
       wsgi_http_config_server_worker_connections },
-    { 0 }
+    { 0, 0, 0 }
 };
 
 

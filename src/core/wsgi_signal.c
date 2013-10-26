@@ -20,7 +20,7 @@ static wsgi_signal_t signals[] = {
     { SIGQUIT, wsgi_signal_shutdown_handler },
     { SIGSYS, SIG_IGN },
     { SIGPIPE, SIG_IGN },
-    { 0 }
+    { 0, 0 }
 };
 
 

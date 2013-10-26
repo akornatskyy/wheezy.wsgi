@@ -93,7 +93,7 @@ wsgi_log_msg(const wsgi_log_t *log, u_int level, u_int source,
 void
 wsgi_printf_log_handler(const wsgi_log_t *log, const char *msg, size_t size)
 {
-    printf(msg);
+    fputs(msg, stdout);
 }
 
 
