@@ -32,7 +32,7 @@ CC = cc
 LINK = \$(CC)
 CFLAGS = -g -pipe -O -W -Wall -Wno-unused-parameter -Werror
 
-CORE_INC = -I $SRC/core -I $GEN
+CORE_INC = -I $SRC/core $incs
 CORE_DEP = $core_dep
 
 EVENT_INC = -I $SRC/event -I $SRC/event/modules
@@ -50,7 +50,7 @@ default: $TARGET
 
 $TARGET: \$(OBJECTS)
 	@/bin/echo -n "linking... " ; \\
-	\$(LINK) \$(OBJECTS) -o $TARGET -lyaml; \\
+	\$(LINK) \$(OBJECTS) -o $TARGET $libs ; \\
 	echo "done."
 
 build/wsgi_main.o: src/wsgi_main.c \$(CORE_DEP) \$(EVENT_DEP) \$(HTTP_DEP)

@@ -23,6 +23,14 @@ case $SYSTEM in
 
     Darwin)
         define USE_KQUEUE
+        incs="$incs -I /opt/local/include"
+        libs="$libs -L /opt/local/lib"
+    ;;
+
+    FreeBSD)
+        define USE_KQUEUE
+        incs="$incs -I /usr/local/include"
+        libs="$libs -L /usr/local/lib"
     ;;
 
     Linux)
