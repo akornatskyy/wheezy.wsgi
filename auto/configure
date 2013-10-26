@@ -12,11 +12,11 @@ AUTO_H=$GEN/wsgi_auto.h
 MODULES_H=$GEN/wsgi_modules.h
 SYSTEM=`uname -s 2>/dev/null`
 
-
 incs="-I $GEN"
 libs="-lyaml"
 modules="event http"
 
+. auto/functions
 . auto/options
 . auto/generate
 . auto/make

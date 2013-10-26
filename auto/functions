@@ -1,0 +1,14 @@
+#!/bin/sh
+
+define() {
+    cat << END >> $AUTO_H
+#ifndef WSGI_$1
+#define WSGI_$1 1
+#endif
+END
+}
+
+mk_line() {
+    r=`echo "$1" | sed -e 's/\([^ ]*\)/  \1 \\\\/;0,/^../s///;$s/..$//'`
+    echo "$r"
+}

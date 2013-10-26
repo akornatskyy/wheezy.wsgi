@@ -1,14 +1,7 @@
 #!/bin/sh
 # vim: set noexpandtab
 
-mk_line() {
-    r=`echo "$1" | sed -e 's/\([^ ]*\)/  \1 \\\\/;0,/^../s///;$s/..$//'`
-    echo "$r"
-}
-
-
 find $SRC -type d | sed -e "s/$SRC/$OBJ/" | xargs mkdir -p
-
 
 core_dep=`find $SRC/core -name '*.h' | sort`
 core_dep=$(mk_line "$core_dep")
@@ -59,7 +52,6 @@ build/wsgi_main.o: src/wsgi_main.c \$(CORE_DEP) \$(EVENT_DEP) \$(HTTP_DEP)
         -c src/wsgi_main.c -o \$@
 
 END
-
 
 source=`find $SRC/core -name '*.c' | sort`
 for s in $source

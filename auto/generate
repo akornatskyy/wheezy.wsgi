@@ -1,15 +1,5 @@
 #!/bin/sh
 
-define() {
-
-    cat << END >> $AUTO_H
-#ifndef WSGI_$1
-#define WSGI_$1 1
-#endif
-END
-
-}
-
 mkdir -p $GEN
 
 cat << EOF > $AUTO_H
