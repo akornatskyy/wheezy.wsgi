@@ -1,0 +1,66 @@
+#!/bin/sh
+
+define() {
+
+    cat << END >> $AUTO_H
+#ifndef $1
+#define $1 1
+#endif
+END
+
+}
+
+mkdir -p $GEN
+
+cat << EOF > $AUTO_H
+#ifndef _WSGI_AUTO_H_INCLUDED_
+#define _WSGI_AUTO_H_INCLUDED_
+
+
+EOF
+
+case $SYSTEM in
+
+    Darwin)
+        define USE_KQUEUE
+    ;;
+
+    Linux)
+        define USE_EPOLL
+        modules="$modules epoll"
+    ;;
+
+esac
+
+cat << EOF >> $AUTO_H
+
+#endif /* _WSGI_AUTO_H_INCLUDED_ */
+EOF
+
+cat << EOF > $MODULES_H
+#ifndef _WSGI_MODULES_H_INCLUDED_
+#define _WSGI_MODULES_H_INCLUDED_
+
+
+#include <wsgi_core.h>
+
+EOF
+
+for m in $modules ; do
+    echo "extern wsgi_module_t ${m}_module;" >> $MODULES_H
+done
+
+cat << EOF >> $MODULES_H
+
+wsgi_module_t* modules[] = {
+EOF
+
+for m in $modules ; do
+    echo "    &${m}_module," >> $MODULES_H
+done
+
+cat << EOF >> $MODULES_H
+};
+
+#endif /* _WSGI_MODULES_H_INCLUDED_ */
+EOF

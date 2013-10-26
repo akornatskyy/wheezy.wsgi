@@ -1,16 +1,8 @@
 
 #include <wsgi_http.h>
+#include <wsgi_modules.h>
 
-
-extern wsgi_module_t event_module;
-extern wsgi_module_t epoll_module;
-extern wsgi_module_t http_module;
-
-wsgi_module_t* modules[] = {
-    &event_module,
-    &epoll_module,
-    &http_module,
-};
+extern wsgi_module_t* modules[];
 
 const uint modules_count = sizeof(modules) / sizeof(wsgi_module_t *);
 

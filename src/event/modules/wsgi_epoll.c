@@ -1,7 +1,9 @@
 
-#include <sys/epoll.h>
 #include <wsgi_event.h>
-#include <wsgi_epoll.h>
+
+#if USE_EPOLL
+
+#include <sys/epoll.h>
 
 
 static void *wsgi_epoll_module_create(wsgi_cycle_t *cycle);
@@ -217,3 +219,5 @@ wsgi_epoll_close(void *self)
 
     return WSGI_OK;
 }
+
+#endif

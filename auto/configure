@@ -2,7 +2,14 @@
 
 SRC=src
 OBJ=build
+GEN=$OBJ/g
 TARGET=$OBJ/wsgi
 MAKEFILE=Makefile
+AUTO_H=$GEN/wsgi_auto.h
+MODULES_H=$GEN/wsgi_modules.h
+SYSTEM=`uname -s 2>/dev/null`
 
+modules="event http"
+
+. auto/generate
 . auto/make

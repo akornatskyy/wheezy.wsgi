@@ -12,6 +12,7 @@ find $SRC -type d | sed -e "s/$SRC/$OBJ/" | xargs mkdir -p
 
 core_dep=`find $SRC/core -name '*.h' | sort`
 core_dep=$(mk_line "$core_dep")
+core_dep="$AUTO_H $MODULES_H $core_dep"
 
 event_dep=`find $SRC/event -name '*.h' | sort`
 event_dep=$(mk_line "$event_dep")
@@ -31,7 +32,7 @@ CC = cc
 LINK = \$(CC)
 CFLAGS = -g -pipe -O -W -Wall -Wno-unused-parameter -Werror
 
-CORE_INC = -I $SRC/core
+CORE_INC = -I $SRC/core -I $GEN
 CORE_DEP = $core_dep
 
 EVENT_INC = -I $SRC/event -I $SRC/event/modules
@@ -48,7 +49,7 @@ all: default
 default: $TARGET
 
 $TARGET: \$(OBJECTS)
-	@echo -n "linking... " ; \\
+	@/bin/echo -n "linking... " ; \\
 	\$(LINK) \$(OBJECTS) -o $TARGET -lyaml; \\
 	echo "done."
 
@@ -103,6 +104,9 @@ done
 cat <<END >> $MAKEFILE
 clean:
 	rm -f $TARGET ; find $OBJ -name '*.o' -exec rm -f {} \;
+
+run:
+	$OBJ/wsgi
 
 socat:
 	cat conf/http-get.txt | socat - unix:/tmp/sample.sock

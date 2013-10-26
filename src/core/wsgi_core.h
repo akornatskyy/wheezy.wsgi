@@ -29,6 +29,7 @@ typedef struct wsgi_socket_s wsgi_socket_t;
 #define WSGI_LOG_SOURCE_SOCKET      1 << 6
 
 
+#include <wsgi_auto.h>
 #include <wsgi_os.h>
 
 #include <wsgi_addr.h>
