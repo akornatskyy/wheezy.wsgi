@@ -21,12 +21,14 @@ case $SYSTEM in
         define HAVE_KQUEUE
         incs="$incs -I /opt/local/include"
         libs="$libs -L /opt/local/lib"
+        modules="$modules kqueue"
     ;;
 
     FreeBSD)
         define HAVE_KQUEUE
         incs="$incs -I /usr/local/include"
         libs="$libs -L /usr/local/lib"
+        modules="$modules kqueue"
     ;;
 
     Linux)
