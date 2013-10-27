@@ -86,6 +86,18 @@ wsgi_event_config_use(wsgi_config_t *c, wsgi_config_option_t *o)
 
     ctx = o->ctx;
     f = ctx->event_loops.items;
+
+    if (strcasecmp((char *) o->value, "auto") == 0
+        && ctx->event_loops.length > 0) {
+
+        wsgi_log_debug(c->log, WSGI_LOG_SOURCE_CONFIG,
+                       "using: %s",
+                       f->name);
+
+        ctx->event_loop_factory = f;
+        return WSGI_OK;
+    }
+
     for (i = 0; i < ctx->event_loops.length; i++, f++) {
         if (strcasecmp((char *) o->value, f->name) == 0) {
             ctx->event_loop_factory = f;
