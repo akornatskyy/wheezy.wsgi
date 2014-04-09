@@ -97,8 +97,10 @@ cat <<END >> $MAKEFILE
 clean:
 	rm -f $TARGET ; find $OBJ -name '*.o' -exec rm -f {} \;
 
-run:
-	$OBJ/wsgi
+rrun:
+	rsync -raz --exclude .hg --exclude Makefile --exclude $OBJ \\
+        . -e ssh deby32:~/wheezy.wsgi/ && \\
+        ssh -tx deby32 "cd ~/wheezy.wsgi && make -j2 && valgrind $TARGET"
 
 socat:
 	cat conf/http-get.txt | socat - unix:/tmp/sample.sock
