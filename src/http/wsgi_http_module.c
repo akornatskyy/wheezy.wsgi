@@ -19,13 +19,13 @@ static int wsgi_http_module_shutdown(wsgi_cycle_t *cycle, void *ctx);
 
 typedef struct {
     wsgi_gc_t           *gc;
+    uint                worker_connections;
+    wsgi_pool_t         *pool;
     wsgi_list_t         servers;
 } wsgi_http_ctx_t;
 
 typedef struct {
-    uint                worker_connections;
     wsgi_addr_t         *listen;
-    wsgi_pool_t         *pool;
     wsgi_acceptor_t     *acceptor;
 } wsgi_http_server_t;
 
@@ -33,15 +33,15 @@ typedef struct {
 extern wsgi_module_t event_module;
 
 static wsgi_config_def_t config_defs[] = {
+    { "worker_connections",
+      WSGI_CONFIG_DEF_ROOT,
+      wsgi_http_config_server_worker_connections },
     { "servers",
       WSGI_CONFIG_DEF_ROOT | WSGI_CONFIG_DEF_SEQUENCE,
       wsgi_http_config_server },
     { "listen",
       WSGI_CONFIG_DEF_SERVER,
       wsgi_http_config_server_listen },
-    { "worker_connections",
-      WSGI_CONFIG_DEF_SERVER,
-      wsgi_http_config_server_worker_connections },
     { 0, 0, 0 }
 };
 
@@ -114,24 +114,20 @@ wsgi_http_config_server_worker_connections(
         wsgi_config_t *c, wsgi_config_option_t *o)
 {
     wsgi_http_ctx_t *ctx;
-    wsgi_list_t *servers;
-    wsgi_http_server_t *server;
 
     wsgi_log_debug(c->log, WSGI_LOG_SOURCE_CONFIG,
-                   "  worker_connections: %s",
+                   "worker_connections: %s",
                    o->value);
 
     ctx = o->ctx;
-    servers = &ctx->servers;
-    server = wsgi_list_last_item(servers);
-    if (server->worker_connections > 0) {
+    if (ctx->worker_connections > 0) {
         wsgi_log_error(c->log, WSGI_LOG_SOURCE_CONFIG,
                        "duplicate `worker_connections` directive");
         return WSGI_ERROR;
     }
 
     // TODO: validate input
-    server->worker_connections = atoi((char *) o->value);
+    ctx->worker_connections = atoi((char *) o->value);
 
     return WSGI_OK;
 }
@@ -165,26 +161,26 @@ wsgi_http_module_init(wsgi_cycle_t *cycle, void *c)
     wsgi_acceptor_t *acceptor;
 
     ctx = c;
-    reactor = wsgi_event_ctx_get_reactor(cycle->ctx[event_module.id]);
 
+    if (ctx->worker_connections == 0) {
+        ctx->worker_connections = WSGI_DEFAULT_WORKER_CONNECTIONS;
+    }
+
+    pool = wsgi_pool_create(ctx->gc,
+                            ctx->worker_connections,
+                            sizeof(wsgi_connection_t));
+    if (pool == NULL) {
+        return WSGI_ERROR;
+    }
+
+    ctx->pool = pool;
+    if (wsgi_http_connection_pool_init(pool, cycle->log) != WSGI_OK) {
+        return WSGI_ERROR;
+    }
+
+    reactor = wsgi_event_ctx_get_reactor(cycle->ctx[event_module.id]);
     server = ctx->servers.items;
     for (n = ctx->servers.length; n-- > 0; server++) {
-        if (server->worker_connections == 0) {
-            server->worker_connections = WSGI_DEFAULT_WORKER_CONNECTIONS;
-        }
-
-        pool = wsgi_pool_create(ctx->gc,
-                                server->worker_connections,
-                                sizeof(wsgi_connection_t));
-        if (pool == NULL) {
-            return WSGI_ERROR;
-        }
-
-        if (wsgi_http_connection_pool_init(pool, cycle->log) != WSGI_OK) {
-            return WSGI_ERROR;
-        }
-
-        server->pool = pool;
 
         acceptor = wsgi_acceptor_create(ctx->gc, reactor, pool,
                                         wsgi_http_connection_open);
@@ -221,12 +217,12 @@ wsgi_http_module_shutdown(wsgi_cycle_t *cycle, void *c)
         if (wsgi_acceptor_close(acceptor) != WSGI_OK) {
             return WSGI_ERROR;
         }
+    }
 
-        pool = server->pool;
-        server->pool = NULL;
-        if (wsgi_http_connection_pool_close(pool) != WSGI_OK) {
-            return WSGI_ERROR;
-        }
+    pool = ctx->pool;
+    ctx->pool = NULL;
+    if (wsgi_http_connection_pool_close(pool) != WSGI_OK) {
+        return WSGI_ERROR;
     }
 
     return WSGI_OK;
