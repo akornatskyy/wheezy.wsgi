@@ -12,7 +12,6 @@ struct wsgi_connection_s {
 
 
 void wsgi_connection_init(wsgi_connection_t *c, wsgi_gc_t *gc);
-void wsgi_connection_reset(wsgi_connection_t *c);
 int wsgi_connection_close(wsgi_connection_t *c);
 
 #endif /* _WSGI_CONNECTION_H_INCLUDED_ */

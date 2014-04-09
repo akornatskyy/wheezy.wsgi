@@ -121,8 +121,6 @@ wsgi_acceptor_handle_event(void *self)
                    "handling event: %p, connection: %p",
                    a, c);
 
-    wsgi_connection_reset(c);
-
     if (wsgi_socket_accept(&a->socket, &c->socket, c->gc) != WSGI_OK) {
 
         wsgi_pool_get_back(a->pool, c);

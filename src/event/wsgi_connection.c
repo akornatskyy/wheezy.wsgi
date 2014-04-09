@@ -14,14 +14,6 @@ wsgi_connection_init(wsgi_connection_t *c, wsgi_gc_t *gc)
 }
 
 
-void
-wsgi_connection_reset(wsgi_connection_t *c)
-{
-    wsgi_gc_reset(c->gc);
-    wsgi_socket_init(&c->socket, c->gc->log);
-}
-
-
 int
 wsgi_connection_close(wsgi_connection_t *c)
 {
@@ -32,6 +24,8 @@ wsgi_connection_close(wsgi_connection_t *c)
     wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_EVENT,
                    "closing connection: %p, fd: %d",
                    c, c->socket.fd);
+
+    wsgi_gc_reset(c->gc);
 
     if (wsgi_reactor_unregister(c->acceptor->reactor,
                                 &c->event_handler) != WSGI_OK) {
