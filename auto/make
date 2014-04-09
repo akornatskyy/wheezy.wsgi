@@ -31,7 +31,7 @@ CORE_DEP = $core_dep
 EVENT_INC = -I $SRC/event -I $SRC/event/modules
 EVENT_DEP = $event_dep
 
-HTTP_INC = -I $SRC/event -I $SRC/http
+HTTP_INC = -I $SRC/event -I $SRC/http -I $SRC/http/modules
 HTTP_DEP = $http_dep
 
 OBJECTS = $objects
