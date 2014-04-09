@@ -41,7 +41,7 @@ wsgi_connection_close(wsgi_connection_t *c)
         return WSGI_ERROR;
     }
 
-    if (wsgi_pool_get_back(c->acceptor->connection_pool, c) != WSGI_OK) {
+    if (wsgi_pool_get_back(c->acceptor->pool, c) != WSGI_OK) {
         return WSGI_ERROR;
     }
 

@@ -11,7 +11,7 @@ struct wsgi_acceptor_s {
     wsgi_event_handler_t    event_handler;
     wsgi_reactor_t          *reactor;
     wsgi_socket_t           socket;
-    wsgi_pool_t             *connection_pool;
+    wsgi_pool_t             *pool;
     int                     (*handle_open)(wsgi_connection_t *c);
 };
 

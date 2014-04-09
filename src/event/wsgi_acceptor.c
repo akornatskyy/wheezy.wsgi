@@ -17,7 +17,7 @@ wsgi_acceptor_create(wsgi_gc_t *gc, wsgi_reactor_t *r, wsgi_pool_t *p,
 
     a->log = gc->log;
     a->reactor = r;
-    a->connection_pool = p;
+    a->pool = p;
     a->event_handler.self = a;
     a->event_handler.get_handle = wsgi_acceptor_get_handle;
     a->event_handler.handle_event = wsgi_acceptor_handle_event;
@@ -95,7 +95,7 @@ wsgi_acceptor_handle_event(void *self)
 
     a = self;
 
-    c = wsgi_pool_acquire(a->connection_pool);
+    c = wsgi_pool_acquire(a->pool);
     if (c == NULL) {
         wsgi_log_error(a->log, WSGI_LOG_SOURCE_ACCEPTOR,
                        "insufficient connections, dropping");
@@ -125,7 +125,7 @@ wsgi_acceptor_handle_event(void *self)
 
     if (wsgi_socket_accept(&a->socket, &c->socket, c->gc) != WSGI_OK) {
 
-        wsgi_pool_get_back(a->connection_pool, c);
+        wsgi_pool_get_back(a->pool, c);
 
         return WSGI_ERROR;
     }
