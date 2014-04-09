@@ -67,7 +67,7 @@ wsgi_cycle_init(wsgi_cycle_t *cycle)
         if (m->init) {
             wsgi_log_debug(cycle->log, WSGI_LOG_SOURCE_CONFIG,
                    "initializing module: %s", m->name);
-            if (m->init(cycle, cycle->ctx[m->id]) != WSGI_OK) {
+            if (m->init(cycle->ctx[m->id]) != WSGI_OK) {
                 wsgi_log_error(cycle->log, WSGI_LOG_SOURCE_CONFIG,
                     "unable to initialize module: %s",
                     m->name);
@@ -95,7 +95,7 @@ wsgi_cycle_shutdown(wsgi_cycle_t *cycle)
         if (m->shutdown) {
             wsgi_log_debug(cycle->log, WSGI_LOG_SOURCE_CONFIG,
                    "shutting down module: %s", m->name);
-            if (m->shutdown(cycle, cycle->ctx[m->id]) != WSGI_OK) {
+            if (m->shutdown(cycle->ctx[m->id]) != WSGI_OK) {
                 wsgi_log_error(cycle->log, WSGI_LOG_SOURCE_CONFIG,
                     "unable to shutdown module: %s",
                     m->name);

@@ -8,8 +8,8 @@ static int wsgi_event_config_events(
         wsgi_config_t *c, wsgi_config_option_t *o);
 
 static void *wsgi_event_module_create(wsgi_cycle_t *cycle);
-static int wsgi_event_module_init(wsgi_cycle_t *cycle, void *ctx);
-static int wsgi_event_module_shutdown(wsgi_cycle_t *cycle, void *ctx);
+static int wsgi_event_module_init(void *self);
+static int wsgi_event_module_shutdown(void *self);
 
 
 typedef struct {
@@ -18,6 +18,7 @@ typedef struct {
 } wsgi_event_loop_factory_t;
 
 struct wsgi_event_ctx_s {
+    wsgi_gc_t                   *gc;
     uint                        events;
     wsgi_list_t                 event_loops;
     wsgi_event_loop_factory_t   *event_loop_factory;
@@ -143,6 +144,7 @@ wsgi_event_module_create(wsgi_cycle_t *cycle)
     wsgi_event_ctx_t *ctx;
 
     ctx = wsgi_gc_calloc(cycle->gc, sizeof(wsgi_event_ctx_t));
+    ctx->gc = cycle->gc;
     wsgi_list_init(&ctx->event_loops, cycle->gc,
                    3, sizeof(wsgi_event_loop_factory_t));
 
@@ -151,17 +153,17 @@ wsgi_event_module_create(wsgi_cycle_t *cycle)
 
 
 static int
-wsgi_event_module_init(wsgi_cycle_t *cycle, void *c)
+wsgi_event_module_init(void *self)
 {
     wsgi_event_ctx_t *ctx;
     wsgi_event_loop_t *l;
 
-    ctx = c;
+    ctx = self;
 
     if (ctx->event_loop_factory == NULL) {
         if (ctx->event_loops.length == 0) {
-            wsgi_log_error(cycle->log, WSGI_LOG_SOURCE_CONFIG,
-                           "no event loops");
+            //wsgi_log_error(cycle->log, WSGI_LOG_SOURCE_CONFIG,
+            //               "no event loops");
             return WSGI_ERROR;
         }
 
@@ -172,12 +174,12 @@ wsgi_event_module_init(wsgi_cycle_t *cycle, void *c)
         ctx->events = WSGI_DEFAULT_EVENTS;
     }
 
-    l = ctx->event_loop_factory->create(cycle->gc, ctx->events);
+    l = ctx->event_loop_factory->create(ctx->gc, ctx->events);
     if (l == NULL) {
         return WSGI_ERROR;
     }
 
-    ctx->reactor = wsgi_reactor_create(cycle->gc, l);
+    ctx->reactor = wsgi_reactor_create(ctx->gc, l);
     if (ctx->reactor == NULL) {
         return WSGI_ERROR;
     }
@@ -187,12 +189,12 @@ wsgi_event_module_init(wsgi_cycle_t *cycle, void *c)
 
 
 static int
-wsgi_event_module_shutdown(wsgi_cycle_t *cycle, void *c)
+wsgi_event_module_shutdown(void *self)
 {
     wsgi_event_ctx_t *ctx;
     wsgi_reactor_t *reactor;
 
-    ctx = c;
+    ctx = self;
     reactor = ctx->reactor;
     ctx->reactor = NULL;
 

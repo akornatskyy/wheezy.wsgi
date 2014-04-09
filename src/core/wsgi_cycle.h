@@ -14,8 +14,8 @@ struct wsgi_module_s {
     u_int                   id;
     wsgi_config_def_t       *defs;
     void                    *(*create)(wsgi_cycle_t *cycle);
-    int                     (*init)(wsgi_cycle_t *cycle, void *ctx);
-    int                     (*shutdown)(wsgi_cycle_t *cycle, void *ctx);
+    int                     (*init)(void *self);
+    int                     (*shutdown)(void *self);
 };
 
 
