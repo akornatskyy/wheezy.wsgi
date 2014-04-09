@@ -5,11 +5,13 @@
 #define WSGI_CONFIG_DEF_SERVER 0x20
 
 
+static int wsgi_http_config_worker_connections(
+        wsgi_config_t *c, wsgi_config_option_t *o);
 static int wsgi_http_config_server(
         wsgi_config_t *c, wsgi_config_option_t *o);
 static int wsgi_http_config_server_listen(wsgi_config_t *c,
         wsgi_config_option_t *o);
-static int wsgi_http_config_server_worker_connections(
+static int wsgi_http_config_server_request_header_buffer_size(
         wsgi_config_t *c, wsgi_config_option_t *o);
 
 static void *wsgi_http_module_create(wsgi_cycle_t *cycle);
@@ -35,13 +37,16 @@ extern wsgi_module_t event_module;
 static wsgi_config_def_t config_defs[] = {
     { "worker_connections",
       WSGI_CONFIG_DEF_ROOT,
-      wsgi_http_config_server_worker_connections },
+      wsgi_http_config_worker_connections },
     { "servers",
       WSGI_CONFIG_DEF_ROOT | WSGI_CONFIG_DEF_SEQUENCE,
       wsgi_http_config_server },
     { "listen",
       WSGI_CONFIG_DEF_SERVER,
       wsgi_http_config_server_listen },
+    { "request_header_buffer_size",
+      WSGI_CONFIG_DEF_SERVER,
+      wsgi_http_config_server_request_header_buffer_size },
     { 0, 0, 0 }
 };
 
@@ -55,6 +60,30 @@ wsgi_module_t http_module = {
 };
 
 // region: module config
+
+static int
+wsgi_http_config_worker_connections(
+        wsgi_config_t *c, wsgi_config_option_t *o)
+{
+    wsgi_http_ctx_t *ctx;
+
+    wsgi_log_debug(c->log, WSGI_LOG_SOURCE_CONFIG,
+                   "worker_connections: %s",
+                   o->value);
+
+    ctx = o->ctx;
+    if (ctx->config.worker_connections > 0) {
+        wsgi_log_error(c->log, WSGI_LOG_SOURCE_CONFIG,
+                       "duplicate `worker_connections` directive");
+        return WSGI_ERROR;
+    }
+
+    // TODO: validate input
+    ctx->config.worker_connections = atoi((char *) o->value);
+
+    return WSGI_OK;
+}
+
 
 static int
 wsgi_http_config_server(wsgi_config_t *c, wsgi_config_option_t *o)
@@ -111,24 +140,28 @@ wsgi_http_config_server_listen(wsgi_config_t *c, wsgi_config_option_t *o)
 
 
 static int
-wsgi_http_config_server_worker_connections(
+wsgi_http_config_server_request_header_buffer_size(
         wsgi_config_t *c, wsgi_config_option_t *o)
 {
     wsgi_http_ctx_t *ctx;
+    wsgi_http_server_t *server;
+    wsgi_list_t *servers;
 
     wsgi_log_debug(c->log, WSGI_LOG_SOURCE_CONFIG,
-                   "worker_connections: %s",
+                   "  request_header_buffer_size: %s",
                    o->value);
 
     ctx = o->ctx;
-    if (ctx->config.worker_connections > 0) {
+    servers = &ctx->servers;
+    server = wsgi_list_last_item(servers);
+    if (server->config.request_header_buffer_size != 0) {
         wsgi_log_error(c->log, WSGI_LOG_SOURCE_CONFIG,
-                       "duplicate `worker_connections` directive");
+                       "duplicate `request_header_buffer_size` directive");
         return WSGI_ERROR;
     }
 
     // TODO: validate input
-    ctx->config.worker_connections = atoi((char *) o->value);
+    server->config.request_header_buffer_size = atoi((char *) o->value);
 
     return WSGI_OK;
 }
@@ -195,8 +228,14 @@ wsgi_http_module_init(void *self)
     server = ctx->servers.items;
     for (n = ctx->servers.length; n-- > 0; server++) {
 
+        if (server->config.request_header_buffer_size == 0) {
+            server->config.request_header_buffer_size =
+                WSGI_DEFAULT_REQUEST_HEADER_BUFFER_SIZE;
+        }
+
         acceptor = wsgi_acceptor_create(ctx->cycle->gc, reactor, pool,
-                                        wsgi_http_connection_open);
+                                        wsgi_http_connection_open,
+                                        &server->config);
         if (acceptor == NULL) {
             return WSGI_ERROR;
         }

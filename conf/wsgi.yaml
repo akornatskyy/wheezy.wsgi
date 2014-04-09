@@ -3,8 +3,8 @@ events: 16
 worker_connections: 8
 servers:
 - listen: unix:/tmp/sample.sock
+  request_header_buffer_size: 768
   #application: my_site
-  #client_header_buffer_size: 1024
   #runtime: python
   #script: test.app
   #environ:

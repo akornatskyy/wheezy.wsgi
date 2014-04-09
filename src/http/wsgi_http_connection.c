@@ -23,7 +23,8 @@ wsgi_http_connection_open(wsgi_connection_t *c)
     }
 
     c->request = wsgi_http_request_create(
-            c->gc, WSGI_DEFAULT_REQUEST_HEADER_BUFFER_SIZE);
+            c->gc,
+            wsgi_http_connection_config(c)->request_header_buffer_size);
     if (c->request == NULL) {
         return WSGI_ERROR;
     }
