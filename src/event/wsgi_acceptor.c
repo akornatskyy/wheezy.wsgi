@@ -4,7 +4,8 @@
 
 wsgi_acceptor_t *
 wsgi_acceptor_create(wsgi_gc_t *gc, wsgi_reactor_t *r, wsgi_pool_t *p,
-                     int (*handle_open)(wsgi_connection_t *c))
+                     int (*handle_open)(wsgi_connection_t *c),
+                     void *config)
 {
     wsgi_acceptor_t *a;
 
@@ -22,6 +23,7 @@ wsgi_acceptor_create(wsgi_gc_t *gc, wsgi_reactor_t *r, wsgi_pool_t *p,
     a->event_handler.get_handle = wsgi_acceptor_get_handle;
     a->event_handler.handle_event = wsgi_acceptor_handle_event;
     a->handle_open = handle_open;
+    a->config = config;
 
     return a;
 }
