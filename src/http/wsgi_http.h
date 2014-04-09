@@ -2,6 +2,8 @@
 #define _WSGI_HTTP_H_INCLUDED_
 
 
+typedef struct wsgi_http_config_s wsgi_http_config_t;
+typedef struct wsgi_http_server_config_s wsgi_http_server_config_t;
 typedef struct wsgi_http_header_pair_s wsgi_http_header_pair_t;
 typedef struct wsgi_http_request_s wsgi_http_request_t;
 

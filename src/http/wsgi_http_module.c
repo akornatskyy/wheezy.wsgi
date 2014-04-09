@@ -18,15 +18,15 @@ static int wsgi_http_module_shutdown(void *self);
 
 
 typedef struct {
-    wsgi_cycle_t        *cycle;
-    uint                worker_connections;
-    wsgi_pool_t         *pool;
-    wsgi_list_t         servers;
+    wsgi_cycle_t                *cycle;
+    wsgi_http_config_t          config;
+    wsgi_pool_t                 *pool;
+    wsgi_list_t                 servers;
 } wsgi_http_ctx_t;
 
 typedef struct {
-    wsgi_addr_t         *listen;
-    wsgi_acceptor_t     *acceptor;
+    wsgi_http_server_config_t   config;
+    wsgi_acceptor_t             *acceptor;
 } wsgi_http_server_t;
 
 
@@ -75,6 +75,7 @@ wsgi_http_config_server(wsgi_config_t *c, wsgi_config_option_t *o)
     // TODO: **server
     //server = wsgi_gc_malloc(ctx->gc, sizeof(wsgi_http_server_t));
     memset(server, 0, sizeof(wsgi_http_server_t));
+    server->config.http_config = &ctx->config;
 
     return WSGI_OK;
 }
@@ -94,14 +95,14 @@ wsgi_http_config_server_listen(wsgi_config_t *c, wsgi_config_option_t *o)
     ctx = o->ctx;
     servers = &ctx->servers;
     server = wsgi_list_last_item(servers);
-    if (server->listen != NULL) {
+    if (server->config.listen != NULL) {
         wsgi_log_error(c->log, WSGI_LOG_SOURCE_CONFIG,
                        "duplicate `listen` directive");
         return WSGI_ERROR;
     }
 
-    server->listen = wsgi_addr_resolve(ctx->cycle->gc, o->value);
-    if (server->listen == NULL) {
+    server->config.listen = wsgi_addr_resolve(ctx->cycle->gc, o->value);
+    if (server->config.listen == NULL) {
         return WSGI_ERROR;
     }
 
@@ -120,14 +121,14 @@ wsgi_http_config_server_worker_connections(
                    o->value);
 
     ctx = o->ctx;
-    if (ctx->worker_connections > 0) {
+    if (ctx->config.worker_connections > 0) {
         wsgi_log_error(c->log, WSGI_LOG_SOURCE_CONFIG,
                        "duplicate `worker_connections` directive");
         return WSGI_ERROR;
     }
 
     // TODO: validate input
-    ctx->worker_connections = atoi((char *) o->value);
+    ctx->config.worker_connections = atoi((char *) o->value);
 
     return WSGI_OK;
 }
@@ -164,16 +165,16 @@ wsgi_http_module_init(void *self)
 
     ctx = self;
 
-    if (ctx->worker_connections == 0) {
-        ctx->worker_connections = WSGI_DEFAULT_WORKER_CONNECTIONS;
+    if (ctx->config.worker_connections == 0) {
+        ctx->config.worker_connections = WSGI_DEFAULT_WORKER_CONNECTIONS;
     }
 
     wsgi_log_info(ctx->cycle->log, WSGI_LOG_SOURCE_HTTP,
                   "connections: %d",
-                  ctx->worker_connections);
+                  ctx->config.worker_connections);
 
     pool = wsgi_pool_create(ctx->cycle->gc,
-                            ctx->worker_connections,
+                            ctx->config.worker_connections,
                             sizeof(wsgi_connection_t));
     if (pool == NULL) {
         return WSGI_ERROR;
@@ -200,7 +201,7 @@ wsgi_http_module_init(void *self)
             return WSGI_ERROR;
         }
 
-        if (wsgi_acceptor_open(acceptor, server->listen) != WSGI_OK) {
+        if (wsgi_acceptor_open(acceptor, server->config.listen) != WSGI_OK) {
             wsgi_acceptor_close(acceptor);
             return WSGI_ERROR;
         }
