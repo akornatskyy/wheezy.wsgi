@@ -38,7 +38,8 @@ wsgi_http_request_create(wsgi_gc_t *gc, u_int buffer_size)
 }
 
 
-static int wsgi_http_request_parse_request_line(wsgi_http_request_t *r)
+static int
+wsgi_http_request_parse_request_line(wsgi_http_request_t *r)
 {
     u_char *p;
     enum {
@@ -134,7 +135,8 @@ done:
 }
 
 
-static int wsgi_http_request_parse_headers(wsgi_http_request_t *r)
+static int
+wsgi_http_request_parse_headers(wsgi_http_request_t *r)
 {
     u_char *p, *name, *name_end, *value, *value_end, *pos;
     wsgi_http_header_pair_t *h;
@@ -232,11 +234,13 @@ static int wsgi_http_request_parse_headers(wsgi_http_request_t *r)
 
 done:
 
+#if WSGI_DEBUG
     if (r->content_length || r->content_type) {
         wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
                        "CONTENT_LENGTH: %s, CONTENT_TYPE: %s",
                        r->content_length, r->content_type);
     }
+#endif
 
     r->handle_read = wsgi_http_request_process;
 
@@ -244,7 +248,8 @@ done:
 }
 
 
-static int wsgi_http_request_process(wsgi_http_request_t *r)
+static int
+wsgi_http_request_process(wsgi_http_request_t *r)
 {
     wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
                    "request: %p, processing",
