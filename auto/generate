@@ -7,7 +7,7 @@ cat << EOF > $AUTO_H
 #define _WSGI_AUTO_H_INCLUDED_
 
 
-#define WSGI_COMPILER "`$CC -v 2>&1 | grep version`"
+#define WSGI_COMPILER "`$CC -v 2>&1 | grep ' version '`"
 
 EOF
 
