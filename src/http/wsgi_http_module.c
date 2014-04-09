@@ -186,12 +186,12 @@ wsgi_http_module_init(wsgi_cycle_t *cycle, void *c)
 
         server->pool = pool;
 
-        acceptor = wsgi_acceptor_create(ctx->gc, reactor, pool);
+        acceptor = wsgi_acceptor_create(ctx->gc, reactor, pool,
+                                        wsgi_http_connection_open);
         if (acceptor == NULL) {
             return WSGI_ERROR;
         }
 
-        acceptor->handle_open = wsgi_http_connection_open;
         if (wsgi_acceptor_open(acceptor, server->listen) != WSGI_OK) {
             wsgi_acceptor_close(acceptor);
             return WSGI_ERROR;
