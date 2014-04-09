@@ -236,7 +236,7 @@ wsgi_http_module_shutdown(void *self)
     ctx->pool = NULL;
 
     for (n = pool->capacity, c = pool->items; n-- > 0; c++) {
-        wsgi_http_connection_close(c);
+        wsgi_connection_close(c);
         wsgi_gc_destroy(c->gc);
     }
 

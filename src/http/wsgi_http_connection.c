@@ -16,7 +16,6 @@ wsgi_http_connection_open(wsgi_connection_t *c)
 
     h = &c->event_handler;
     h->self = c;
-    h->get_handle = wsgi_connection_get_handle;
     h->handle_event = wsgi_http_connection_handle_read;
 
     if (wsgi_reactor_register(c->acceptor->reactor, h) != WSGI_OK) {
@@ -30,21 +29,6 @@ wsgi_http_connection_open(wsgi_connection_t *c)
     }
 
     return wsgi_http_connection_handle_read(c);
-}
-
-
-int
-wsgi_http_connection_close(wsgi_connection_t *c)
-{
-    if (c->socket.fd == -1) {
-        return WSGI_OK;
-    }
-
-    wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_HTTP,
-                   "closing connection: %p, fd: %d",
-                   c, c->socket.fd);
-
-    return wsgi_connection_close(c);
 }
 
 
@@ -76,20 +60,20 @@ wsgi_http_connection_handle_read(void *self)
             wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                            "connection %p closed by peer, fd: %d",
                            c, c->socket.fd);
-            return wsgi_http_connection_close(c);
+            return wsgi_connection_close(c);
         }
 
         if (n == -1) {
             wsgi_log_error(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                            "recv, fd: %d, errno %d: %s",
                            c, c->socket.fd, errno, strerror(errno));
-            return wsgi_http_connection_close(c);
+            return wsgi_connection_close(c);
         }
 
         r->buffer_last += n;
 
         if (r->handle_read(r) != WSGI_OK) {
-            return wsgi_http_connection_close(c);
+            return wsgi_connection_close(c);
         }
 
         if (n < size) break;
