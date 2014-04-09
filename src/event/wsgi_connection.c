@@ -2,10 +2,14 @@
 #include <wsgi_event.h>
 
 
+static int wsgi_connection_get_handle(void *self);
+
+
 void
 wsgi_connection_init(wsgi_connection_t *c, wsgi_gc_t *gc)
 {
     c->gc = gc;
+    c->event_handler.get_handle = wsgi_connection_get_handle;
     wsgi_socket_init(&c->socket, gc->log);
 }
 
@@ -19,18 +23,15 @@ wsgi_connection_reset(wsgi_connection_t *c)
 
 
 int
-wsgi_connection_get_handle(void *self)
-{
-    return ((wsgi_connection_t *) self)->socket.fd;
-}
-
-
-int
 wsgi_connection_close(wsgi_connection_t *c)
 {
     if (c->socket.fd == -1) {
-        return WSGI_ERROR;
+        return WSGI_OK;
     }
+
+    wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_EVENT,
+                   "closing connection: %p, fd: %d",
+                   c, c->socket.fd);
 
     if (wsgi_reactor_unregister(c->acceptor->reactor,
                                 &c->event_handler) != WSGI_OK) {
@@ -46,4 +47,11 @@ wsgi_connection_close(wsgi_connection_t *c)
     }
 
     return WSGI_OK;
+}
+
+
+static int
+wsgi_connection_get_handle(void *self)
+{
+    return ((wsgi_connection_t *) self)->socket.fd;
 }
