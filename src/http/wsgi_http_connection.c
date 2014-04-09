@@ -48,48 +48,6 @@ wsgi_http_connection_close(wsgi_connection_t *c)
 }
 
 
-int
-wsgi_http_connection_pool_init(wsgi_pool_t *p, wsgi_log_t *log)
-{
-    u_int i;
-    wsgi_gc_t *gc;
-    wsgi_connection_t *c;
-
-    wsgi_log_info(log, WSGI_LOG_SOURCE_HTTP,
-                  "connections: %d",
-                  p->capacity);
-
-    for (i = 0, c = p->items; i < p->capacity; i++, c++) {
-        gc = wsgi_gc_create(WSGI_DEFAULT_CONNECTION_GC_SIZE, log);
-        if (gc == NULL) {
-            return WSGI_ERROR;
-        }
-
-        wsgi_connection_init(c, gc);
-    }
-
-    return WSGI_OK;
-}
-
-
-int
-wsgi_http_connection_pool_close(wsgi_pool_t *p)
-{
-    u_int i;
-    wsgi_connection_t *c;
-
-    for (i = 0, c = p->items; i < p->capacity; i++, c++) {
-        if (wsgi_http_connection_close(c) != WSGI_OK) {
-            return WSGI_ERROR;
-        }
-
-        wsgi_gc_destroy(c->gc);
-    }
-
-    return WSGI_OK;
-}
-
-
 static int
 wsgi_http_connection_handle_read(void *self)
 {

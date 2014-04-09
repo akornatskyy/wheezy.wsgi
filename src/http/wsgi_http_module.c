@@ -154,17 +154,23 @@ static int
 wsgi_http_module_init(void *self)
 {
     u_int n;
-    wsgi_http_ctx_t *ctx;
-    wsgi_pool_t *pool;
-    wsgi_http_server_t *server;
-    wsgi_reactor_t *reactor;
     wsgi_acceptor_t *acceptor;
+    wsgi_connection_t *c;
+    wsgi_gc_t *gc;
+    wsgi_http_ctx_t *ctx;
+    wsgi_http_server_t *server;
+    wsgi_pool_t *pool;
+    wsgi_reactor_t *reactor;
 
     ctx = self;
 
     if (ctx->worker_connections == 0) {
         ctx->worker_connections = WSGI_DEFAULT_WORKER_CONNECTIONS;
     }
+
+    wsgi_log_info(ctx->cycle->log, WSGI_LOG_SOURCE_HTTP,
+                  "connections: %d",
+                  ctx->worker_connections);
 
     pool = wsgi_pool_create(ctx->cycle->gc,
                             ctx->worker_connections,
@@ -174,8 +180,14 @@ wsgi_http_module_init(void *self)
     }
 
     ctx->pool = pool;
-    if (wsgi_http_connection_pool_init(pool, ctx->cycle->log) != WSGI_OK) {
-        return WSGI_ERROR;
+    for (n = pool->capacity, c = pool->items; n-- > 0; c++) {
+        gc = wsgi_gc_create(WSGI_DEFAULT_CONNECTION_GC_SIZE,
+                            ctx->cycle->log);
+        if (gc == NULL) {
+            return WSGI_ERROR;
+        }
+
+        wsgi_connection_init(c, gc);
     }
 
     reactor = wsgi_event_ctx_get_reactor(ctx->cycle->ctx[event_module.id]);
@@ -204,9 +216,10 @@ static int
 wsgi_http_module_shutdown(void *self)
 {
     u_int n;
+    wsgi_acceptor_t *acceptor;
+    wsgi_connection_t *c;
     wsgi_http_ctx_t *ctx;
     wsgi_http_server_t *server;
-    wsgi_acceptor_t *acceptor;
     wsgi_pool_t *pool;
 
     ctx = self;
@@ -221,8 +234,10 @@ wsgi_http_module_shutdown(void *self)
 
     pool = ctx->pool;
     ctx->pool = NULL;
-    if (wsgi_http_connection_pool_close(pool) != WSGI_OK) {
-        return WSGI_ERROR;
+
+    for (n = pool->capacity, c = pool->items; n-- > 0; c++) {
+        wsgi_http_connection_close(c);
+        wsgi_gc_destroy(c->gc);
     }
 
     return WSGI_OK;
