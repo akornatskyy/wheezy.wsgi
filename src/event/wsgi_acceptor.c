@@ -2,6 +2,10 @@
 #include <wsgi_event.h>
 
 
+static int wsgi_acceptor_get_handle(void *self);
+static int wsgi_acceptor_handle_event(void *self);
+
+
 wsgi_acceptor_t *
 wsgi_acceptor_create(wsgi_gc_t *gc, wsgi_reactor_t *r, wsgi_pool_t *p,
                      int (*handle_open)(wsgi_connection_t *c),
@@ -81,14 +85,14 @@ wsgi_acceptor_close(wsgi_acceptor_t *a)
 }
 
 
-int
+static int
 wsgi_acceptor_get_handle(void *self)
 {
     return ((wsgi_acceptor_t *) self)->socket.fd;
 }
 
 
-int
+static int
 wsgi_acceptor_handle_event(void *self)
 {
     int fd;

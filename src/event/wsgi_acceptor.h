@@ -23,7 +23,5 @@ wsgi_acceptor_create(wsgi_gc_t *gc, wsgi_reactor_t *r, wsgi_pool_t *p,
                      void *config);
 int wsgi_acceptor_open(wsgi_acceptor_t *a, wsgi_addr_t *addr);
 int wsgi_acceptor_close(wsgi_acceptor_t *a);
-int wsgi_acceptor_get_handle(void *instance);
-int wsgi_acceptor_handle_event(void *instance);
 
 #endif /* _WSGI_ACCEPTOR_H_INCLUDED_ */
