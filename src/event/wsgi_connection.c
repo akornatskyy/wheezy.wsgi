@@ -17,33 +17,21 @@ wsgi_connection_init(wsgi_connection_t *c, wsgi_gc_t *gc,
 }
 
 
-int
+void
 wsgi_connection_close(wsgi_connection_t *c)
 {
     if (c->socket.fd == -1) {
-        return WSGI_OK;
+        return;
     }
 
     wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_EVENT,
                    "closing connection: %p, fd: %d",
                    c, c->socket.fd);
 
+    wsgi_reactor_unregister(c->acceptor->reactor, &c->event_handler);
+    wsgi_socket_close(&c->socket);
+    wsgi_pool_get_back(c->acceptor->pool, c);
     wsgi_gc_reset(c->gc);
-
-    if (wsgi_reactor_unregister(c->acceptor->reactor,
-                                &c->event_handler) != WSGI_OK) {
-        return WSGI_ERROR;
-    }
-
-    if (wsgi_socket_close(&c->socket) != WSGI_OK) {
-        return WSGI_ERROR;
-    }
-
-    if (wsgi_pool_get_back(c->acceptor->pool, c) != WSGI_OK) {
-        return WSGI_ERROR;
-    }
-
-    return WSGI_OK;
 }
 
 
