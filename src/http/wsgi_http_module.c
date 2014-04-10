@@ -101,9 +101,10 @@ wsgi_http_config_server(wsgi_config_t *c, wsgi_config_option_t *o)
         return WSGI_ERROR;
     }
 
+    memset(server, 0, sizeof(wsgi_http_server_t));
+
     // TODO: **server
     //server = wsgi_gc_malloc(ctx->gc, sizeof(wsgi_http_server_t));
-    memset(server, 0, sizeof(wsgi_http_server_t));
     server->config.http_config = &ctx->config;
 
     return WSGI_OK;
@@ -173,7 +174,7 @@ wsgi_http_module_create(wsgi_cycle_t *cycle)
 {
     wsgi_http_ctx_t *ctx;
 
-    ctx = wsgi_gc_malloc(cycle->gc, sizeof(wsgi_http_ctx_t));
+    ctx = wsgi_gc_calloc(cycle->gc, sizeof(wsgi_http_ctx_t));
     ctx->cycle = cycle;
     if (wsgi_list_init(&ctx->servers, cycle->gc, 2,
                        sizeof(wsgi_http_server_t)) != WSGI_OK) {
@@ -221,7 +222,7 @@ wsgi_http_module_init(void *self)
             return WSGI_ERROR;
         }
 
-        wsgi_connection_init(c, gc);
+        wsgi_connection_init(c, gc, wsgi_http_connection_handle_read);
     }
 
     reactor = wsgi_event_ctx_get_reactor(ctx->cycle->ctx[event_module.id]);

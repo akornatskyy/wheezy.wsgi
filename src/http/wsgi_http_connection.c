@@ -2,23 +2,15 @@
 #include <wsgi_http.h>
 
 
-static int wsgi_http_connection_handle_read(void *self);
-
-
 int
 wsgi_http_connection_open(wsgi_connection_t *c)
 {
-    wsgi_event_handler_t *h;
-
     wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                    "opening connection: %p, fd: %d",
                    c, c->socket.fd);
 
-    h = &c->event_handler;
-    h->self = c;
-    h->handle_event = wsgi_http_connection_handle_read;
-
-    if (wsgi_reactor_register(c->acceptor->reactor, h) != WSGI_OK) {
+    if (wsgi_reactor_register(c->acceptor->reactor,
+                              &c->event_handler) != WSGI_OK) {
         return WSGI_ERROR;
     }
 
@@ -33,7 +25,7 @@ wsgi_http_connection_open(wsgi_connection_t *c)
 }
 
 
-static int
+int
 wsgi_http_connection_handle_read(void *self)
 {
     ssize_t n, size;
