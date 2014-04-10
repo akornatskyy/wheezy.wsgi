@@ -8,7 +8,7 @@ struct wsgi_http_header_pair_s {
 };
 
 struct wsgi_http_request_s {
-    const wsgi_log_t        *log;
+    wsgi_connection_t       *connection;
     u_char                  *buffer_start;
     u_char                  *buffer_pos;
     u_char                  *buffer_last;
@@ -30,6 +30,6 @@ struct wsgi_http_request_s {
 
 
 wsgi_http_request_t *
-wsgi_http_request_create(wsgi_gc_t *gc, u_int buffer_size);
+wsgi_http_request_create(wsgi_connection_t *c);
 
 #endif /* _WSGI_HTTP_REQUEST_H_INCLUDED_ */

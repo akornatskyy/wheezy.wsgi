@@ -9,9 +9,7 @@ wsgi_http_connection_open(wsgi_connection_t *c)
                    "opening connection: %p, fd: %d",
                    c, c->socket.fd);
 
-    c->request = wsgi_http_request_create(
-            c->gc,
-            wsgi_http_connection_config(c)->request_header_buffer_size);
+    c->request = wsgi_http_request_create(c);
     if (c->request == NULL) {
         wsgi_connection_close(c);
         return WSGI_ERROR;

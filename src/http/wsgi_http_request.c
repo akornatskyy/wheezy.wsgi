@@ -8,27 +8,29 @@ static int wsgi_http_request_process(wsgi_http_request_t *r);
 
 
 wsgi_http_request_t *
-wsgi_http_request_create(wsgi_gc_t *gc, u_int buffer_size)
+wsgi_http_request_create(wsgi_connection_t *c)
 {
     u_char *b;
+    u_int buffer_size;
     wsgi_http_request_t *r;
 
-    b = wsgi_gc_malloc_ref(gc, buffer_size);
+    buffer_size = wsgi_http_connection_config(c)->request_header_buffer_size;
+    b = wsgi_gc_malloc_ref(c->gc, buffer_size);
     if (b == NULL) {
         return NULL;
     }
 
-    r = wsgi_gc_calloc(gc, sizeof(wsgi_http_request_t));
+    r = wsgi_gc_calloc(c->gc, sizeof(wsgi_http_request_t));
     if (r == NULL) {
         return NULL;
     }
 
-    r->log = gc->log;
+    r->connection = c;
     r->buffer_start = r->buffer_last = r->buffer_pos = b;
     r->buffer_end = b + buffer_size;
     r->handle_read = wsgi_http_request_parse_request_line;
 
-    if (wsgi_list_init(&r->headers, gc,
+    if (wsgi_list_init(&r->headers, c->gc,
                        WSGI_DEFAULT_REQUEST_HEADERS_CAPACITY,
                        sizeof(wsgi_http_header_pair_t)) != WSGI_OK) {
         return NULL;
@@ -46,7 +48,7 @@ wsgi_http_request_parse_request_line(wsgi_http_request_t *r)
         START = 0, METHOD, SPACE1, URI, MARK, QUERY, SPACE2, PROTOCOL, END
     } state;
 
-    wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+    wsgi_log_debug(r->connection->gc->log, WSGI_LOG_SOURCE_HTTP,
                    "request: %p, parsing request line",
                    r);
 
@@ -60,7 +62,8 @@ wsgi_http_request_parse_request_line(wsgi_http_request_t *r)
             case METHOD:
                 if (*p == ' ') {
                     *p = '\0'; state = SPACE1;
-                    wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+                    wsgi_log_debug(r->connection->gc->log,
+                                   WSGI_LOG_SOURCE_HTTP,
                                    "  REQUEST_METHOD: %s",
                                    r->method);
                 }
@@ -96,7 +99,8 @@ wsgi_http_request_parse_request_line(wsgi_http_request_t *r)
                 break;
 
             case SPACE2:
-                wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+                wsgi_log_debug(r->connection->gc->log,
+                               WSGI_LOG_SOURCE_HTTP,
                                "  PATH_INFO: %s, QUERY_STRING: %s",
                                r->path_info, r->query_string);
                 r->protocol = p; state = PROTOCOL;
@@ -105,7 +109,8 @@ wsgi_http_request_parse_request_line(wsgi_http_request_t *r)
             case PROTOCOL:
                 if (*p == CR) {
                     *p = '\0'; state = END;
-                    wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+                    wsgi_log_debug(r->connection->gc->log,
+                                   WSGI_LOG_SOURCE_HTTP,
                                    "  SERVER_PROTOCOL: %s",
                                    r->protocol);
                 }
@@ -114,7 +119,7 @@ wsgi_http_request_parse_request_line(wsgi_http_request_t *r)
 
             case END:
                 if (*p == LF) goto done;
-                wsgi_log_error(r->log, WSGI_LOG_SOURCE_HTTP,
+                wsgi_log_error(r->connection->gc->log, WSGI_LOG_SOURCE_HTTP,
                                "request line: expecting LF after CR, "
                                "%#x found", *p);
                 return WSGI_ERROR;
@@ -144,7 +149,7 @@ wsgi_http_request_parse_headers(wsgi_http_request_t *r)
         START = 0, NAME, COLON, SPACE, VALUE, END, DONE
     } state;
 
-    wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+    wsgi_log_debug(r->connection->gc->log, WSGI_LOG_SOURCE_HTTP,
                    "request: %p, parsing headers",
                    r);
 
@@ -168,7 +173,8 @@ wsgi_http_request_parse_headers(wsgi_http_request_t *r)
 
             case COLON:
                 if (*p != ' ') {
-                    wsgi_log_error(r->log, WSGI_LOG_SOURCE_HTTP,
+                    wsgi_log_error(r->connection->gc->log,
+                                   WSGI_LOG_SOURCE_HTTP,
                                    "header: expecting space after colon, "
                                    "%#x found", *p);
                     return WSGI_ERROR;
@@ -187,7 +193,8 @@ wsgi_http_request_parse_headers(wsgi_http_request_t *r)
 
             case END:
                 if (*p != LF) {
-                    wsgi_log_error(r->log, WSGI_LOG_SOURCE_HTTP,
+                    wsgi_log_error(r->connection->gc->log,
+                                   WSGI_LOG_SOURCE_HTTP,
                                    "header: expecting LF after CR, "
                                    "%#x found", *p);
                     return WSGI_ERROR;
@@ -214,14 +221,14 @@ wsgi_http_request_parse_headers(wsgi_http_request_t *r)
                         break;
                 }
 
-                wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+                wsgi_log_debug(r->connection->gc->log, WSGI_LOG_SOURCE_HTTP,
                                "  %s: %s",
                                name, value);
                 break;
 
             case DONE:
                 if (*p == LF) goto done;
-                wsgi_log_error(r->log, WSGI_LOG_SOURCE_HTTP,
+                wsgi_log_error(r->connection->gc->log, WSGI_LOG_SOURCE_HTTP,
                                "header: expecting LF after CR, "
                                "%#x found", *p);
                 return WSGI_ERROR;
@@ -236,7 +243,7 @@ done:
 
 #if WSGI_DEBUG
     if (r->content_length || r->content_type) {
-        wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+        wsgi_log_debug(r->connection->gc->log, WSGI_LOG_SOURCE_HTTP,
                        "CONTENT_LENGTH: %s, CONTENT_TYPE: %s",
                        r->content_length, r->content_type);
     }
@@ -251,7 +258,7 @@ done:
 static int
 wsgi_http_request_process(wsgi_http_request_t *r)
 {
-    wsgi_log_debug(r->log, WSGI_LOG_SOURCE_HTTP,
+    wsgi_log_debug(r->connection->gc->log, WSGI_LOG_SOURCE_HTTP,
                    "request: %p, processing",
                    r);
     return WSGI_OK;
