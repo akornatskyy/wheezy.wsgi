@@ -126,6 +126,17 @@ wsgi_acceptor_handle_event(void *self)
     if (wsgi_socket_accept(&a->socket, &c->socket, c->gc) != WSGI_OK) {
 
         wsgi_pool_get_back(a->pool, c);
+        wsgi_gc_reset(c->gc);
+
+        return WSGI_ERROR;
+    }
+
+    if (wsgi_reactor_register(a->reactor,
+                              &c->event_handler) != WSGI_OK) {
+
+        wsgi_socket_close(&c->socket);
+        wsgi_pool_get_back(a->pool, c);
+        wsgi_gc_reset(c->gc);
 
         return WSGI_ERROR;
     }

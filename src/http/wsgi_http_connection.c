@@ -9,15 +9,11 @@ wsgi_http_connection_open(wsgi_connection_t *c)
                    "opening connection: %p, fd: %d",
                    c, c->socket.fd);
 
-    if (wsgi_reactor_register(c->acceptor->reactor,
-                              &c->event_handler) != WSGI_OK) {
-        return WSGI_ERROR;
-    }
-
     c->request = wsgi_http_request_create(
             c->gc,
             wsgi_http_connection_config(c)->request_header_buffer_size);
     if (c->request == NULL) {
+        wsgi_connection_close(c);
         return WSGI_ERROR;
     }
 
@@ -53,20 +49,23 @@ wsgi_http_connection_handle_read(void *self)
             wsgi_log_debug(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                            "connection %p closed by peer, fd: %d",
                            c, c->socket.fd);
-            return wsgi_connection_close(c);
+            wsgi_connection_close(c);
+            return WSGI_ERROR;
         }
 
         if (n == -1) {
             wsgi_log_error(c->gc->log, WSGI_LOG_SOURCE_HTTP,
                            "recv, fd: %d, errno %d: %s",
                            c, c->socket.fd, errno, strerror(errno));
-            return wsgi_connection_close(c);
+            wsgi_connection_close(c);
+            return WSGI_ERROR;
         }
 
         r->buffer_last += n;
 
         if (r->handle_read(r) != WSGI_OK) {
-            return wsgi_connection_close(c);
+            wsgi_connection_close(c);
+            return WSGI_ERROR;
         }
 
         if (n < size) break;
