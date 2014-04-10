@@ -6,7 +6,6 @@ extern sig_atomic_t wsgi_signal_shutdown;
 
 
 struct wsgi_reactor_s {
-    const wsgi_log_t            *log;
     wsgi_event_loop_t           *event_loop;
     int                         active;
 };
@@ -19,7 +18,6 @@ wsgi_reactor_create(wsgi_gc_t *gc, wsgi_event_loop_t *l)
 
     r = wsgi_gc_malloc(gc, sizeof(wsgi_reactor_t));
 
-    r->log = gc->log;
     r->event_loop = l;
     r->active = 0;
 
