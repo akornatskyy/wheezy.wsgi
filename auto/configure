@@ -14,7 +14,7 @@ SYSTEM=`uname -s 2>/dev/null`
 
 incs="-I $GEN"
 libs="-lyaml"
-modules="event http http_not_found"
+modules="event http http_sample"
 
 . auto/functions
 . auto/options
