@@ -1,5 +1,5 @@
-#ifndef _WSGI_CONFIG_H_INCLUDED_
-#define _WSGI_CONFIG_H_INCLUDED_
+#ifndef WSGI_CONFIG_H
+#define WSGI_CONFIG_H
 
 
 #define WSGI_CONFIG_DEF_SEQUENCE    0x01
@@ -30,4 +30,4 @@ struct wsgi_config_option_s {
 
 int wsgi_config_load(wsgi_config_t *c, const u_char *filename);
 
-#endif /* _WSGI_CONFIG_H_INCLUDED_ */
+#endif /* WSGI_CONFIG_H */

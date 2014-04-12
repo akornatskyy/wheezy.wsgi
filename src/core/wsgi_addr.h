@@ -1,5 +1,5 @@
-#ifndef _WSGI_ADDR_H_INCLUDED_
-#define _WSGI_ADDR_H_INCLUDED_
+#ifndef WSGI_ADDR_H
+#define WSGI_ADDR_H
 
 
 typedef struct {
@@ -11,4 +11,4 @@ typedef struct {
 
 wsgi_addr_t *wsgi_addr_resolve(wsgi_gc_t *gc, const u_char *url);
 
-#endif /* _WSGI_ADDR_H_INCLUDED_ */
+#endif /* WSGI_ADDR_H */

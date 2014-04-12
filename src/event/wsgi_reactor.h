@@ -1,5 +1,5 @@
-#ifndef _WSGI_REACTOR_H_INCLUDED_
-#define _WSGI_REACTOR_H_INCLUDED_
+#ifndef WSGI_REACTOR_H
+#define WSGI_REACTOR_H
 
 
 struct wsgi_event_loop_s {
@@ -23,4 +23,4 @@ int wsgi_reactor_unregister(wsgi_reactor_t *r, wsgi_event_handler_t *h);
 int wsgi_reactor_wait_for_events(wsgi_reactor_t *r);
 int wsgi_reactor_destroy(wsgi_reactor_t *r);
 
-#endif /* _WSGI_REACTOR_H_INCLUDED_ */
+#endif /* WSGI_REACTOR_H */

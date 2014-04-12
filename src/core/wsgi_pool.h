@@ -1,6 +1,6 @@
 
-#ifndef _WSGI_POOL_H_INCLUDED_
-#define _WSGI_POOL_H_INCLUDED_
+#ifndef WSGI_POOL_H
+#define WSGI_POOL_H
 
 
 struct wsgi_pool_s {
@@ -20,4 +20,4 @@ void *wsgi_pool_acquire(wsgi_pool_t *p);
 int wsgi_pool_get_back(wsgi_pool_t *p, void *item);
 
 
-#endif /* _WSGI_POOL_H_INCLUDED_ */
+#endif /* WSGI_POOL_H */

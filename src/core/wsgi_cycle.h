@@ -1,5 +1,5 @@
-#ifndef _WSGI_CYCLE_H_INCLUDED_
-#define _WSGI_CYCLE_H_INCLUDED_
+#ifndef WSGI_CYCLE_H
+#define WSGI_CYCLE_H
 
 
 struct wsgi_cycle_s {
@@ -27,4 +27,4 @@ int wsgi_cycle_shutdown(wsgi_cycle_t *cycle);
 extern wsgi_module_t* modules[];
 extern const u_int modules_count;
 
-#endif /* _WSGI_CYCLE_H_INCLUDED_ */
+#endif /* WSGI_CYCLE_H */

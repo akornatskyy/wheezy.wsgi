@@ -1,5 +1,5 @@
-#ifndef _WSGI_GC_H_INCLUDED_
-#define _WSGI_GC_H_INCLUDED_
+#ifndef WSGI_GC_H
+#define WSGI_GC_H
 
 
 typedef struct wsgi_gc_block_s wsgi_gc_block_t;
@@ -41,4 +41,4 @@ void *wsgi_gc_calloc(wsgi_gc_t *gc, size_t size);
 
 void *wsgi_gc_malloc_ref(wsgi_gc_t *gc, size_t size);
 
-#endif /* _WSGI_GC_H_INCLUDED_ */
+#endif /* WSGI_GC_H */

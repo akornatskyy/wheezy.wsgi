@@ -1,5 +1,5 @@
-#ifndef _WSGI_HTTP_REQUEST_H_INCLUDED_
-#define _WSGI_HTTP_REQUEST_H_INCLUDED_
+#ifndef WSGI_HTTP_REQUEST_H
+#define WSGI_HTTP_REQUEST_H
 
 
 struct wsgi_http_header_pair_s {
@@ -32,4 +32,4 @@ struct wsgi_http_request_s {
 wsgi_http_request_t *
 wsgi_http_request_create(wsgi_connection_t *c);
 
-#endif /* _WSGI_HTTP_REQUEST_H_INCLUDED_ */
+#endif /* WSGI_HTTP_REQUEST_H */

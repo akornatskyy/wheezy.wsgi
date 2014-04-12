@@ -1,5 +1,5 @@
-#ifndef _WSGI_HTTP_CONNECTION_H_INCLUDED_
-#define _WSGI_HTTP_CONNECTION_H_INCLUDED_
+#ifndef WSGI_HTTP_CONNECTION_H
+#define WSGI_HTTP_CONNECTION_H
 
 
 int wsgi_http_connection_open(wsgi_connection_t *c);
@@ -9,4 +9,4 @@ int wsgi_http_connection_handle_read(void *self);
     ((wsgi_http_server_config_t *)c->acceptor->config)
 
 
-#endif /* _WSGI_HTTP_CONNECTION_H_INCLUDED_ */
+#endif /* WSGI_HTTP_CONNECTION_H */

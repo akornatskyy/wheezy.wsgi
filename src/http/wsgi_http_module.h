@@ -1,5 +1,5 @@
-#ifndef _WSGI_HTTP_MODULE_H_INCLUDED_
-#define _WSGI_HTTP_MODULE_H_INCLUDED_
+#ifndef WSGI_HTTP_MODULE_H
+#define WSGI_HTTP_MODULE_H
 
 
 struct wsgi_http_config_s {
@@ -13,4 +13,4 @@ struct wsgi_http_server_config_s {
     uint                request_header_buffer_size;
 };
 
-#endif /* _WSGI_HTTP_MODULE_H_INCLUDED_ */
+#endif /* WSGI_HTTP_MODULE_H */

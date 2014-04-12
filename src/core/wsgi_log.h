@@ -1,5 +1,5 @@
-#ifndef _WSGI_LOG_H_INCLUDED_
-#define _WSGI_LOG_H_INCLUDED_
+#ifndef WSGI_LOG_H
+#define WSGI_LOG_H
 
 
 #define WSGI_LOG_EMERG          0
@@ -55,4 +55,4 @@ void wsgi_log_set_source(u_int source, const char *name);
 
 #endif /* WSGI_DEBUG */
 
-#endif /* _WSGI_LOG_H_INCLUDED_ */
+#endif /* WSGI_LOG_H */

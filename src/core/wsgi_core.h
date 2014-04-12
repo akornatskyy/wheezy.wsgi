@@ -1,5 +1,5 @@
-#ifndef _WSGI_CORE_H_INCLUDED_
-#define _WSGI_CORE_H_INCLUDED_
+#ifndef WSGI_CORE_H
+#define WSGI_CORE_H
 
 
 typedef struct wsgi_log_s wsgi_log_t;
@@ -43,4 +43,4 @@ typedef struct wsgi_socket_s wsgi_socket_t;
 #include <wsgi_signal.h>
 #include <wsgi_socket.h>
 
-#endif /* _WSGI_CORE_H_INCLUDED_ */
+#endif /* WSGI_CORE_H */

@@ -1,5 +1,5 @@
-#ifndef _WSGI_EVENT_MODULE_H_INCLUDED_
-#define _WSGI_EVENT_MODULE_H_INCLUDED_
+#ifndef WSGI_EVENT_MODULE_H
+#define WSGI_EVENT_MODULE_H
 
 
 typedef wsgi_event_loop_t *(wsgi_event_loop_create_pt)(
@@ -10,4 +10,4 @@ wsgi_reactor_t* wsgi_event_ctx_get_reactor(wsgi_event_ctx_t* ctx);
 int wsgi_event_ctx_add_event_loop(wsgi_event_ctx_t* ctx, const char *name,
                                   wsgi_event_loop_create_pt create);
 
-#endif /* _WSGI_EVENT_MODULE_H_INCLUDED_ */
+#endif /* WSGI_EVENT_MODULE_H */

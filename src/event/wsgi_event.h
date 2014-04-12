@@ -1,5 +1,5 @@
-#ifndef _WSGI_EVENT_H_INCLUDED_
-#define _WSGI_EVENT_H_INCLUDED_
+#ifndef WSGI_EVENT_H
+#define WSGI_EVENT_H
 
 
 typedef struct wsgi_acceptor_s wsgi_acceptor_t;
@@ -23,4 +23,4 @@ typedef struct wsgi_reactor_s wsgi_reactor_t;
 #include <wsgi_event_module.h>
 #include <wsgi_reactor.h>
 
-#endif /* _WSGI_EVENT_H_INCLUDED_ */
+#endif /* WSGI_EVENT_H */

@@ -1,5 +1,5 @@
-#ifndef _WSGI_ACCEPTOR_H_INCLUDED_
-#define _WSGI_ACCEPTOR_H_INCLUDED_
+#ifndef WSGI_ACCEPTOR_H
+#define WSGI_ACCEPTOR_H
 
 #include <wsgi_addr.h>
 #include <wsgi_reactor.h>
@@ -24,4 +24,4 @@ wsgi_acceptor_create(wsgi_gc_t *gc, wsgi_reactor_t *r, wsgi_pool_t *p,
 int wsgi_acceptor_open(wsgi_acceptor_t *a, wsgi_addr_t *addr);
 int wsgi_acceptor_close(wsgi_acceptor_t *a);
 
-#endif /* _WSGI_ACCEPTOR_H_INCLUDED_ */
+#endif /* WSGI_ACCEPTOR_H */

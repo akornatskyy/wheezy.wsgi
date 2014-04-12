@@ -1,5 +1,5 @@
-#ifndef _WSGI_HTTP_H_INCLUDED_
-#define _WSGI_HTTP_H_INCLUDED_
+#ifndef WSGI_HTTP_H
+#define WSGI_HTTP_H
 
 
 typedef struct wsgi_http_config_s wsgi_http_config_t;
@@ -20,4 +20,4 @@ typedef struct wsgi_http_request_s wsgi_http_request_t;
 #include <wsgi_http_module.h>
 #include <wsgi_http_request.h>
 
-#endif /* _WSGI_HTTP_H_INCLUDED_ */
+#endif /* WSGI_HTTP_H */

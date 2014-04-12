@@ -1,5 +1,5 @@
-#ifndef _WSGI_OS_H_INCLUDED_
-#define _WSGI_OS_H_INCLUDED_
+#ifndef WSGI_OS_H
+#define WSGI_OS_H
 
 
 #include <arpa/inet.h>
@@ -24,4 +24,4 @@
 #define wsgi_sleep(s)           sleep(s)
 #define wsgi_msleep(ms)         usleep(ms * 1000)
 
-#endif /* _WSGI_OS_H_INCLUDED_ */
+#endif /* WSGI_OS_H */

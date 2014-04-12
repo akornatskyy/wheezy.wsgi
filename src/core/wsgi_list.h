@@ -1,6 +1,6 @@
 
-#ifndef _WSGI_LIST_H_INCLUDED_
-#define _WSGI_LIST_H_INCLUDED_
+#ifndef WSGI_LIST_H
+#define WSGI_LIST_H
 
 
 struct wsgi_list_s {
@@ -21,4 +21,4 @@ void *wsgi_list_append(wsgi_list_t *list);
 
 #define wsgi_list_last_item(l) l->items + l->size * (l->length - 1)
 
-#endif /* _WSGI_LIST_H_INCLUDED_ */
+#endif /* WSGI_LIST_H */
