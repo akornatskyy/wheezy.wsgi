@@ -100,7 +100,7 @@ clean:
 	rm -f $TARGET ; find $OBJ -name '*.o' -exec rm -f {} \;
 
 rrun:
-	rsync -raz --exclude .hg --exclude Makefile --exclude $OBJ \\
+	rsync -raz --delete --exclude .hg --exclude Makefile --exclude $OBJ \\
         . -e ssh deby32:~/wheezy.wsgi/ && \\
         ssh -tx deby32 "cd ~/wheezy.wsgi && make -j2 && valgrind $TARGET"
 
