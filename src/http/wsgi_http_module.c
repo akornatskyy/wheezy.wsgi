@@ -59,7 +59,7 @@ wsgi_module_t http_module = {
     wsgi_http_module_shutdown
 };
 
-// region: module config
+/* region: module config */
 
 static int
 wsgi_http_config_worker_connections(
@@ -78,7 +78,7 @@ wsgi_http_config_worker_connections(
         return WSGI_ERROR;
     }
 
-    // TODO: validate input
+    /* TODO: validate input */
     ctx->config.worker_connections = atoi((char *) o->value);
 
     return WSGI_OK;
@@ -103,8 +103,9 @@ wsgi_http_config_server(wsgi_config_t *c, wsgi_config_option_t *o)
 
     memset(server, 0, sizeof(wsgi_http_server_t));
 
-    // TODO: **server
-    //server = wsgi_gc_malloc(ctx->gc, sizeof(wsgi_http_server_t));
+    /* TODO: **server
+    server = wsgi_gc_malloc(ctx->gc, sizeof(wsgi_http_server_t));
+    */
     server->config.http_config = &ctx->config;
 
     return WSGI_OK;
@@ -161,13 +162,13 @@ wsgi_http_config_server_request_header_buffer_size(
         return WSGI_ERROR;
     }
 
-    // TODO: validate input
+    /* TODO: validate input */
     server->config.request_header_buffer_size = atoi((char *) o->value);
 
     return WSGI_OK;
 }
 
-// region: module lifetime
+/* region: module lifetime */
 
 static void *
 wsgi_http_module_create(wsgi_cycle_t *cycle)

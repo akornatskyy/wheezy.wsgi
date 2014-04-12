@@ -23,7 +23,9 @@ cat <<END > $MAKEFILE
 
 CC = $CC
 LINK = \$(CC)
-CFLAGS = -g -pipe -O -W -Wall -Wno-unused-parameter -Werror
+CFLAGS = -g -pipe -O2 -W -Wall -Wextra -Wshadow -Wpointer-arith \
+-Wstrict-prototypes -Wmissing-prototypes -Wdeclaration-after-statement \
+-Wno-unused-parameter -Werror
 
 CORE_INC = -I $SRC/core $incs
 CORE_DEP = $core_dep

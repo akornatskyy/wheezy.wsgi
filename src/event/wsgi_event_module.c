@@ -45,7 +45,7 @@ wsgi_module_t event_module = {
     wsgi_event_module_shutdown
 };
 
-// region: module context
+/* region: module context */
 
 wsgi_reactor_t*
 wsgi_event_ctx_get_reactor(wsgi_event_ctx_t* ctx)
@@ -72,7 +72,7 @@ wsgi_event_ctx_add_event_loop(wsgi_event_ctx_t* ctx, const char *name,
     return WSGI_OK;
 }
 
-// region: module config
+/* region: module config */
 
 static int
 wsgi_event_config_use(wsgi_config_t *c, wsgi_config_option_t *o)
@@ -130,13 +130,13 @@ wsgi_event_config_events(wsgi_config_t *c, wsgi_config_option_t *o)
         return WSGI_ERROR;
     }
 
-    // TODO: validate input
+    /* TODO: validate input */
     ctx->events = atoi((char *) o->value);
 
     return WSGI_OK;
 }
 
-// region: module lifetime
+/* region: module lifetime */
 
 static void *
 wsgi_event_module_create(wsgi_cycle_t *cycle)
@@ -162,8 +162,8 @@ wsgi_event_module_init(void *self)
 
     if (ctx->event_loop_factory == NULL) {
         if (ctx->event_loops.length == 0) {
-            //wsgi_log_error(cycle->log, WSGI_LOG_SOURCE_CONFIG,
-            //               "no event loops");
+            wsgi_log_error(ctx->gc->log, WSGI_LOG_SOURCE_CONFIG,
+                           "no event loops");
             return WSGI_ERROR;
         }
 

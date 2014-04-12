@@ -53,7 +53,7 @@ wsgi_list_append(wsgi_list_t *list)
         size = list->capacity * list->size;
         b = list->gc->current;
 
-        if (list->items + size == b->current && b->left >= size)
+        if ((u_char *) list->items + size == b->current && b->left >= size)
         {
             wsgi_log_debug(list->gc->log, WSGI_LOG_SOURCE_LIST,
                            "extend: %p, block: %p, size: %d",
@@ -68,7 +68,7 @@ wsgi_list_append(wsgi_list_t *list)
                 return NULL;
             }
 
-            if (list->items + size == b->current)
+            if ((u_char *) list->items + size == b->current)
             {
                 wsgi_log_debug(list->gc->log, WSGI_LOG_SOURCE_LIST,
                                "release: %p, block: %p, size: %d",
@@ -88,7 +88,7 @@ wsgi_list_append(wsgi_list_t *list)
         list->capacity *= 2;
     }
 
-    p = list->items + list->size * list->length++;
+    p = (u_char *) list->items + list->size * list->length++;
 
     wsgi_log_debug(list->gc->log, WSGI_LOG_SOURCE_LIST,
                    "append: %p, item: %p",

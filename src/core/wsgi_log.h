@@ -22,7 +22,7 @@ struct wsgi_log_s {
 };
 
 
-wsgi_log_t *wsgi_log_init();
+wsgi_log_t *wsgi_log_init(void);
 void wsgi_log_msg(const wsgi_log_t *log, u_int level, u_int source,
                   const char *fmt, ...);
 void wsgi_log_set_source(u_int source, const char *name);

@@ -34,7 +34,7 @@ static const char *log_level[] = {
 
 static const char *log_source[WSGI_LOG_MAX_SOURCE + 1];
 
-static wsgi_log_t log;
+static wsgi_log_t g_log;
 
 
 static void wsgi_printf_log_handler(const wsgi_log_t *log,
@@ -42,17 +42,17 @@ static void wsgi_printf_log_handler(const wsgi_log_t *log,
 
 
 wsgi_log_t *
-wsgi_log_init()
+wsgi_log_init(void)
 {
     u_int i;
     for(i = 1; i < WSGI_LOG_MAX_SOURCE; i++) {
         log_source[i] = "undefined";
     }
 
-    log.log_level = WSGI_LOG_DEBUG;
-    log.log_source = WSGI_LOG_SOURCE_ALL;
-    log.handler = wsgi_printf_log_handler;
-    return &log;
+    g_log.log_level = WSGI_LOG_DEBUG;
+    g_log.log_source = WSGI_LOG_SOURCE_ALL;
+    g_log.handler = wsgi_printf_log_handler;
+    return &g_log;
 }
 
 

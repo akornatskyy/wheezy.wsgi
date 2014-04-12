@@ -6,6 +6,7 @@
 #include <sys/epoll.h>
 
 
+static wsgi_event_loop_t *wsgi_epoll_create(wsgi_gc_t *gc, u_int length);
 static void *wsgi_epoll_module_create(wsgi_cycle_t *cycle);
 static int wsgi_epoll_add(void *self, wsgi_event_handler_t *h);
 static int wsgi_epoll_del(void *self, wsgi_event_handler_t *h);
@@ -32,7 +33,8 @@ wsgi_module_t epoll_module = {
     NULL
 };
 
-wsgi_event_loop_t *
+
+static wsgi_event_loop_t *
 wsgi_epoll_create(wsgi_gc_t *gc, u_int length)
 {
     wsgi_epoll_t *e;

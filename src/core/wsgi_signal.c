@@ -48,8 +48,8 @@ wsgi_signal_init(wsgi_log_t *log)
 void
 wsgi_signal_shutdown_handler(int signo)
 {
-    // Erace ^C echo from terminal
+    /* Erace ^C echo from terminal */
     printf("\r");
-    // TODO: add logging of signal received
+    /* TODO: add logging of signal received */
     wsgi_signal_shutdown = 1;
 }

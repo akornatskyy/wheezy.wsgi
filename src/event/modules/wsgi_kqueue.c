@@ -5,7 +5,7 @@
 
 #include <sys/event.h>
 
-
+static wsgi_event_loop_t * wsgi_kqueue_create(wsgi_gc_t *gc, u_int length);
 static void *wsgi_kqueue_module_create(wsgi_cycle_t *cycle);
 static int wsgi_kqueue_add(void *self, wsgi_event_handler_t *h);
 static int wsgi_kqueue_del(void *self, wsgi_event_handler_t *h);
@@ -34,7 +34,8 @@ wsgi_module_t kqueue_module = {
     NULL
 };
 
-wsgi_event_loop_t *
+
+static wsgi_event_loop_t *
 wsgi_kqueue_create(wsgi_gc_t *gc, u_int length)
 {
     wsgi_kqueue_t *e;

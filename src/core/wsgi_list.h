@@ -19,6 +19,7 @@ int wsgi_list_init(wsgi_list_t *list, wsgi_gc_t *gc, u_int capacity,
 
 void *wsgi_list_append(wsgi_list_t *list);
 
-#define wsgi_list_last_item(l) l->items + l->size * (l->length - 1)
+#define wsgi_list_last_item(l)                                                \
+    (void *) ((u_char *) l->items + l->size * (l->length - 1))
 
 #endif /* WSGI_LIST_H */

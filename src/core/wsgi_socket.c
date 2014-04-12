@@ -1,7 +1,7 @@
 
 #include <wsgi_core.h>
 
-// 32bit - unix: 2, tcp4: 16, tcp6: 28
+/* 32bit - unix: 2, tcp4: 16, tcp6: 28 */
 #define WSGI_ACCEPT_SOCKLEN 28
 
 

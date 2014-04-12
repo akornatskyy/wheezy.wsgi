@@ -39,10 +39,10 @@ wsgi_gc_destroy(wsgi_gc_t *gc)
     wsgi_gc_ref_t *r;
     wsgi_gc_block_t *b, *n;
 #if WSGI_DEBUG
-    // Avoid invalid read once gc is freed
+    /* Avoid invalid read once gc is freed */
     const wsgi_log_t *log;
-    log = gc->log;
     u_int c;
+    log = gc->log;
 
     c = 0;
 #endif
@@ -79,11 +79,9 @@ wsgi_gc_destroy(wsgi_gc_t *gc)
 #endif
 
     for (b = &gc->b, n = b->next; ; b = n, n = n->next) {
-#if WSGI_DEBUG
         wsgi_log_debug(log, WSGI_LOG_SOURCE_GC,
                        "destroy: %p > %p, fails: %d, unused: %d",
                        gc, b, b->fails, b->left);
-#endif
 
         wsgi_free(b);
         if (n == NULL) break;
@@ -94,32 +92,43 @@ wsgi_gc_destroy(wsgi_gc_t *gc)
 void
 wsgi_gc_reset(wsgi_gc_t *gc)
 {
-    u_int c;
     wsgi_gc_ref_t *r;
     wsgi_gc_block_t *b;
 
-    for (c = 0, r = gc->ref; r; r = r->next) {
+#if DEBUG
+    u_int c;
+    c = 0;
+#endif
+    for (r = gc->ref; r; r = r->next) {
         if (r->ref1 != NULL) {
             wsgi_free(r->ref1);
+#if DEBUG
             c++;
+#endif
         }
 
         if (r->ref2 != NULL) {
             wsgi_free(r->ref2);
+#if DEBUG
             c++;
+#endif
         }
 
         if (r->ref3 != NULL) {
             wsgi_free(r->ref3);
+#if DEBUG
             c++;
+#endif
         }
     }
 
+#if DEBUG
     if (c > 0) {
         wsgi_log_debug(gc->log, WSGI_LOG_SOURCE_GC,
                        "reset: %p, count: %d, ref_size: %d",
                        gc, c, gc->ref_size);
     }
+#endif
 
     gc->ref = NULL;
     gc->ref_size = 0;

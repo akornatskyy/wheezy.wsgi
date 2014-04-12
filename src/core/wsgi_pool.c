@@ -24,7 +24,7 @@ int
 wsgi_pool_init(wsgi_pool_t *p, wsgi_gc_t *gc, u_int capacity, size_t size)
 {
     u_int i;
-    void *t;
+    u_char *t;
 
     t = wsgi_gc_malloc(gc, capacity * size);
     if (t == NULL) {
