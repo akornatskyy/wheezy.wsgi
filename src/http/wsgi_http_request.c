@@ -143,7 +143,12 @@ done:
 static int
 wsgi_http_request_parse_headers(wsgi_http_request_t *r)
 {
-    u_char *p, *name, *name_end, *value, *value_end, *pos;
+    u_char *p;
+    u_char *name;
+    u_char *name_end;
+    u_char *value;
+    u_char *value_end;
+    u_char *pos;
     wsgi_http_header_pair_t *h;
     enum {
         START = 0, NAME, COLON, SPACE, VALUE, END, DONE
