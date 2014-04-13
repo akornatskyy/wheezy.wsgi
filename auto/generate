@@ -3,8 +3,8 @@
 mkdir -p $GEN
 
 cat << EOF > $AUTO_H
-#ifndef _WSGI_AUTO_H_INCLUDED_
-#define _WSGI_AUTO_H_INCLUDED_
+#ifndef AUTO_H
+#define AUTO_H
 
 
 #define WSGI_COMPILER "`$CC -v 2>&1 | grep ' version '`"
@@ -40,12 +40,12 @@ esac
 
 cat << EOF >> $AUTO_H
 
-#endif /* _WSGI_AUTO_H_INCLUDED_ */
+#endif /* AUTO_H */
 EOF
 
 cat << EOF > $MODULES_H
-#ifndef _WSGI_MODULES_H_INCLUDED_
-#define _WSGI_MODULES_H_INCLUDED_
+#ifndef MODULES_H
+#define MODULES_H
 
 
 #include <wsgi_core.h>
@@ -68,5 +68,5 @@ done
 cat << EOF >> $MODULES_H
 };
 
-#endif /* _WSGI_MODULES_H_INCLUDED_ */
+#endif /* MODULES_H */
 EOF
