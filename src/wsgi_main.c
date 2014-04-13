@@ -4,7 +4,7 @@
 
 extern wsgi_module_t* modules[];
 
-const uint modules_count = sizeof(modules) / sizeof(wsgi_module_t *);
+const u_int modules_count = sizeof(modules) / sizeof(wsgi_module_t *);
 
 
 static int

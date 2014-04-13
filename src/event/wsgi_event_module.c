@@ -19,7 +19,7 @@ typedef struct {
 
 struct wsgi_event_ctx_s {
     wsgi_gc_t                   *gc;
-    uint                        events;
+    u_int                       events;
     wsgi_list_t                 event_loops;
     wsgi_event_loop_factory_t   *event_loop_factory;
     wsgi_reactor_t              *reactor;
