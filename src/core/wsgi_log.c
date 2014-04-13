@@ -49,7 +49,11 @@ wsgi_log_init(void)
         log_source[i] = "undefined";
     }
 
+#if WSGI_DEBUG
     g_log.log_level = WSGI_LOG_DEBUG;
+#else
+    g_log.log_level = WSGI_LOG_INFO;
+#endif
     g_log.log_source = WSGI_LOG_SOURCE_ALL;
     g_log.handler = wsgi_printf_log_handler;
     return &g_log;
