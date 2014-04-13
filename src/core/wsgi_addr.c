@@ -39,7 +39,7 @@ wsgi_addr_resolve(wsgi_gc_t *gc, const u_char *url)
 static int
 wsgi_init_unix(wsgi_addr_t *a, wsgi_gc_t *gc, const u_char *url)
 {
-    u_int l;
+    size_t l;
     struct sockaddr_un *sa;
 
     l = strlen((char *) url);
@@ -183,7 +183,7 @@ wsgi_inet_ntop(const struct in_addr *ia, const u_char *port,
 {
     char b[INET_ADDRSTRLEN];
     char *p;
-    u_int l, n;
+    size_t l, n;
 
     if (inet_ntop(AF_INET, ia, b, INET_ADDRSTRLEN) == NULL) {
         return WSGI_ERROR;
@@ -212,7 +212,7 @@ static int wsgi_inet6_ntop(const struct in6_addr *ia, const u_char *port,
 {
     char b[INET6_ADDRSTRLEN];
     char *p;
-    u_int l, n;
+    size_t l, n;
 
     if (inet_ntop(AF_INET6, ia, b, INET6_ADDRSTRLEN) == NULL) {
         return WSGI_ERROR;
