@@ -5,22 +5,6 @@
 #define WSGI_ACCEPT_SOCKLEN 28
 
 
-wsgi_socket_t *
-wsgi_socket_create(wsgi_gc_t *gc)
-{
-    wsgi_socket_t *s;
-
-    s = wsgi_gc_malloc(gc, sizeof(wsgi_socket_t));
-    if (s == NULL) {
-        return NULL;
-    }
-
-    wsgi_socket_init(s, gc->log);
-
-    return s;
-}
-
-
 void
 wsgi_socket_init(wsgi_socket_t *s, const wsgi_log_t *log)
 {
