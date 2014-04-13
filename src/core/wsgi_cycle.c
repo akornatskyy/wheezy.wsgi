@@ -2,11 +2,12 @@
 #include <wsgi_core.h>
 
 
-static int wsgi_cycle_lookup_config(void *adapter, wsgi_config_option_t *c);
+static int
+wsgi_cycle_lookup_config(const void *adapter, wsgi_config_option_t *c);
 
 
 wsgi_cycle_t *
-wsgi_cycle_create(wsgi_log_t* log)
+wsgi_cycle_create(const wsgi_log_t* log)
 {
     wsgi_gc_t *gc;
     wsgi_cycle_t *cycle;
@@ -33,7 +34,12 @@ wsgi_cycle_init(wsgi_cycle_t *cycle)
     u_int i;
     const wsgi_module_t *m;
     void *ctx;
-    wsgi_config_t c;
+    wsgi_config_t c = {
+        .root_block = WSGI_CONFIG_DEF_ROOT,
+        .adapter = cycle,
+        .lookup = wsgi_cycle_lookup_config,
+        .log = cycle->log
+    };
 
     cycle->ctx = wsgi_gc_malloc(cycle->gc, modules_count * sizeof(void *));
     for (i = 0; i < modules_count; i++) {
@@ -54,10 +60,6 @@ wsgi_cycle_init(wsgi_cycle_t *cycle)
         }
     }
 
-    c.root_block = WSGI_CONFIG_DEF_ROOT;
-    c.adapter = cycle;
-    c.lookup = wsgi_cycle_lookup_config;
-    c.log = cycle->log;
     if (wsgi_config_load(&c, cycle->filename) != WSGI_OK) {
         return WSGI_ERROR;
     }
@@ -112,11 +114,11 @@ wsgi_cycle_shutdown(wsgi_cycle_t *cycle)
 
 
 int
-wsgi_cycle_lookup_config(void *adapter, wsgi_config_option_t *o)
+wsgi_cycle_lookup_config(const void *adapter, wsgi_config_option_t *o)
 {
     u_int i;
-    wsgi_cycle_t *cycle;
-    wsgi_config_def_t *d;
+    const wsgi_cycle_t *cycle;
+    const wsgi_config_def_t *d;
 
     cycle = adapter;
     for (i = 0; i < modules_count; i++) {

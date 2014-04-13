@@ -7,14 +7,14 @@ static void wsgi_signal_shutdown_handler(int signo);
 
 typedef struct {
     int         signo;
-    void        (*handler)(int signo);
+    void        (* const handler)(int signo);
 } wsgi_signal_t;
 
 
 volatile sig_atomic_t wsgi_signal_shutdown = 0;
 
 
-static wsgi_signal_t signals[] = {
+static wsgi_signal_t const signals[] = {
     { SIGINT, wsgi_signal_shutdown_handler },
     { SIGTERM, wsgi_signal_shutdown_handler },
     { SIGQUIT, wsgi_signal_shutdown_handler },
@@ -25,9 +25,9 @@ static wsgi_signal_t signals[] = {
 
 
 int
-wsgi_signal_init(wsgi_log_t *log)
+wsgi_signal_init(const wsgi_log_t *log)
 {
-    wsgi_signal_t *s;
+    const wsgi_signal_t *s;
     struct sigaction sa;
 
     for (s = signals; s->signo != 0; s++) {
