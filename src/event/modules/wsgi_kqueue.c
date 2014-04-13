@@ -67,6 +67,9 @@ wsgi_kqueue_create(wsgi_gc_t *gc, u_int length)
     }
 
     e->events = wsgi_gc_malloc(gc, length * sizeof(struct kevent));
+    if (e->events == NULL) {
+        return NULL;
+    }
 
     l = &e->loop;
     l->self = e;
