@@ -17,6 +17,9 @@ wsgi_reactor_create(wsgi_gc_t *gc, wsgi_event_loop_t *l)
     wsgi_reactor_t *r;
 
     r = wsgi_gc_malloc(gc, sizeof(wsgi_reactor_t));
+    if (r == NULL) {
+        return NULL;
+    }
 
     r->event_loop = l;
     r->active = 0;
