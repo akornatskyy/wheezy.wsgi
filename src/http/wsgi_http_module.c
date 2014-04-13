@@ -34,7 +34,7 @@ typedef struct {
 
 extern wsgi_module_t event_module;
 
-static wsgi_config_def_t config_defs[] = {
+static const wsgi_config_def_t config_defs[] = {
     { "worker_connections",
       WSGI_CONFIG_DEF_ROOT,
       wsgi_http_config_worker_connections },
@@ -51,7 +51,7 @@ static wsgi_config_def_t config_defs[] = {
 };
 
 
-wsgi_module_t http_module = {
+const wsgi_module_t http_module = {
     "http", -1,
     config_defs,
     wsgi_http_module_create,

@@ -26,7 +26,7 @@ struct wsgi_event_ctx_s {
 };
 
 
-static wsgi_config_def_t config_defs[] = {
+static const wsgi_config_def_t config_defs[] = {
     { "use",
       WSGI_CONFIG_DEF_ROOT,
       wsgi_event_config_use },
@@ -37,7 +37,7 @@ static wsgi_config_def_t config_defs[] = {
 };
 
 
-wsgi_module_t event_module = {
+const wsgi_module_t event_module = {
     "event", -1,
     config_defs,
     wsgi_event_module_create,
