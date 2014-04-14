@@ -4,9 +4,10 @@ worker_connections: 8
 servers:
 - listen: unix:/tmp/sample.sock
   request_header_buffer_size: 768
+  runtime: sample
   #application: my_site
-  #runtime: python
   #script: test.app
   #environ:
   #  SCRIPT_NAME: ''
 - listen: 127.0.0.1:8080
+  runtime: sample

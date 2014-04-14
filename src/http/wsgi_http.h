@@ -3,9 +3,13 @@
 
 
 typedef struct wsgi_http_config_s wsgi_http_config_t;
-typedef struct wsgi_http_server_config_s wsgi_http_server_config_t;
+typedef struct wsgi_http_ctx_s wsgi_http_ctx_t;
+typedef struct wsgi_http_handler_s wsgi_http_handler_t;
 typedef struct wsgi_http_header_pair_s wsgi_http_header_pair_t;
 typedef struct wsgi_http_request_s wsgi_http_request_t;
+typedef struct wsgi_http_server_config_s wsgi_http_server_config_t;
+
+typedef int (wsgi_http_handler_pt)(wsgi_http_request_t *r);
 
 
 #define WSGI_DEFAULT_REQUEST_HEADERS_CAPACITY 12

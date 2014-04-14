@@ -13,18 +13,26 @@ static int wsgi_http_config_server_listen(wsgi_config_t *c,
         wsgi_config_option_t *o);
 static int wsgi_http_config_server_request_header_buffer_size(
         wsgi_config_t *c, wsgi_config_option_t *o);
+static int wsgi_http_config_server_runtime(
+        wsgi_config_t *c, wsgi_config_option_t *o);
 
 static void *wsgi_http_module_create(wsgi_cycle_t *cycle);
 static int wsgi_http_module_init(void *self);
 static int wsgi_http_module_shutdown(void *self);
 
 
-typedef struct {
+struct wsgi_http_handler_s {
+    const char                  *name;
+    wsgi_http_handler_pt        *process;
+};
+
+struct wsgi_http_ctx_s {
     wsgi_cycle_t                *cycle;
     wsgi_http_config_t          config;
     wsgi_pool_t                 *pool;
     wsgi_list_t                 servers;
-} wsgi_http_ctx_t;
+    wsgi_list_t                 handlers;
+};
 
 typedef struct {
     wsgi_http_server_config_t   config;
@@ -47,6 +55,9 @@ static const wsgi_config_def_t config_defs[] = {
     { "request_header_buffer_size",
       WSGI_CONFIG_DEF_SERVER,
       wsgi_http_config_server_request_header_buffer_size },
+    { "runtime",
+      WSGI_CONFIG_DEF_SERVER,
+      wsgi_http_config_server_runtime },
     { 0, 0, 0 }
 };
 
@@ -58,6 +69,26 @@ const wsgi_module_t http_module = {
     wsgi_http_module_init,
     wsgi_http_module_shutdown
 };
+
+/* region: module context */
+
+int
+wsgi_http_ctx_add_handler(wsgi_http_ctx_t *ctx,
+                          const char * name,
+                          wsgi_http_handler_pt *process)
+{
+    wsgi_http_handler_t *p;
+
+    p = wsgi_list_append(&ctx->handlers);
+    if (p == NULL) {
+        return WSGI_ERROR;
+    }
+
+    p->name = name;
+    p->process = process;
+
+    return WSGI_OK;
+}
 
 /* region: module config */
 
@@ -168,6 +199,45 @@ wsgi_http_config_server_request_header_buffer_size(
     return WSGI_OK;
 }
 
+
+static int
+wsgi_http_config_server_runtime(
+        wsgi_config_t *c, wsgi_config_option_t *o)
+{
+    u_int n;
+    wsgi_http_ctx_t *ctx;
+    wsgi_http_server_t *server;
+    wsgi_list_t *servers;
+    wsgi_http_handler_t *h;
+
+    wsgi_log_debug(c->log, WSGI_LOG_SOURCE_CONFIG,
+                   "  runtime: %s",
+                   o->value);
+
+    ctx = o->ctx;
+    servers = &ctx->servers;
+    server = wsgi_list_last_item(servers);
+    if (server->config.process != NULL) {
+        wsgi_log_error(c->log, WSGI_LOG_SOURCE_CONFIG,
+                       "duplicate `runtime` directive");
+        return WSGI_ERROR;
+    }
+
+    h = ctx->handlers.items;
+    for (n = ctx->handlers.length; n-- > 0; h++) {
+        if (strcasecmp((char *) o->value, h->name) == 0) {
+            server->config.process = h->process;
+            return WSGI_OK;
+        }
+    }
+
+    wsgi_log_error(c->log, WSGI_LOG_SOURCE_CONFIG,
+                   "unsupported runtime: %s",
+                   o->value);
+
+    return WSGI_ERROR;
+}
+
 /* region: module lifetime */
 
 static void *
@@ -179,6 +249,11 @@ wsgi_http_module_create(wsgi_cycle_t *cycle)
     ctx->cycle = cycle;
     if (wsgi_list_init(&ctx->servers, cycle->gc, 2,
                        sizeof(wsgi_http_server_t)) != WSGI_OK) {
+        return NULL;
+    }
+
+    if (wsgi_list_init(&ctx->handlers, cycle->gc, 2,
+                       sizeof(wsgi_http_handler_t)) != WSGI_OK) {
         return NULL;
     }
 
@@ -230,6 +305,13 @@ wsgi_http_module_init(void *self)
     server = ctx->servers.items;
     for (n = ctx->servers.length; n-- > 0; server++) {
 
+        if (server->config.process == NULL) {
+            wsgi_log_error(ctx->cycle->log, WSGI_LOG_SOURCE_HTTP,
+                           "server: %p, runtime required",
+                           server);
+            return WSGI_ERROR;
+        }
+
         if (server->config.request_header_buffer_size == 0) {
             server->config.request_header_buffer_size =
                 WSGI_DEFAULT_REQUEST_HEADER_BUFFER_SIZE;
@@ -238,6 +320,7 @@ wsgi_http_module_init(void *self)
         acceptor = wsgi_acceptor_create(ctx->cycle->gc, reactor, pool,
                                         wsgi_http_connection_open,
                                         &server->config);
+
         if (acceptor == NULL) {
             return WSGI_ERROR;
         }

@@ -266,5 +266,5 @@ wsgi_http_request_process(wsgi_http_request_t *r)
     wsgi_log_debug(r->connection->gc->log, WSGI_LOG_SOURCE_HTTP,
                    "request: %p, processing",
                    r);
-    return WSGI_OK;
+    return wsgi_http_connection_config(r->connection)->process(r);
 }
