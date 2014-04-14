@@ -25,7 +25,7 @@ typedef struct {
 
 extern wsgi_module_t event_module;
 
-wsgi_module_t epoll_module = {
+const wsgi_module_t epoll_module = {
     "epoll", -1,
     NULL,
     wsgi_epoll_module_create,

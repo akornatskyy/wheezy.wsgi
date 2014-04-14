@@ -26,7 +26,7 @@ typedef struct {
 
 extern wsgi_module_t event_module;
 
-wsgi_module_t kqueue_module = {
+const wsgi_module_t kqueue_module = {
     "kqueue", -1,
     NULL,
     wsgi_kqueue_module_create,
