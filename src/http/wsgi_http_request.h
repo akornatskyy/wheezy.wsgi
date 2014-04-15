@@ -28,6 +28,13 @@ struct wsgi_http_request_s {
     u_char                  state;
 };
 
+struct wsgi_http_runtime_s {
+    void                    *self;
+    int                     (*load)(void *self);
+    int                     (*process)(void *self, wsgi_http_request_t *r);
+    int                     (*unload)(void *self);
+};
+
 
 wsgi_http_request_t *
 wsgi_http_request_create(wsgi_connection_t *c);

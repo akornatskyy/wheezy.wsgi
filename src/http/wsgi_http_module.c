@@ -21,17 +21,17 @@ static int wsgi_http_module_init(void *self);
 static int wsgi_http_module_shutdown(void *self);
 
 
-struct wsgi_http_handler_s {
+typedef struct {
     const char                  *name;
-    wsgi_http_handler_pt        *process;
-};
+    wsgi_http_runtime_create_pt *create;
+} wsgi_http_runtime_factory_t;
 
 struct wsgi_http_ctx_s {
     wsgi_cycle_t                *cycle;
     wsgi_http_config_t          config;
     wsgi_pool_t                 *pool;
     wsgi_list_t                 servers;
-    wsgi_list_t                 handlers;
+    wsgi_list_t                 runtimes;
 };
 
 typedef struct {
@@ -73,19 +73,19 @@ const wsgi_module_t http_module = {
 /* region: module context */
 
 int
-wsgi_http_ctx_add_handler(wsgi_http_ctx_t *ctx,
-                          const char * name,
-                          wsgi_http_handler_pt *process)
+wsgi_http_ctx_add_runtime(wsgi_http_ctx_t *ctx,
+                          const char *name,
+                          wsgi_http_runtime_create_pt *create)
 {
-    wsgi_http_handler_t *p;
+    wsgi_http_runtime_factory_t *f;
 
-    p = wsgi_list_append(&ctx->handlers);
-    if (p == NULL) {
+    f = wsgi_list_append(&ctx->runtimes);
+    if (f == NULL) {
         return WSGI_ERROR;
     }
 
-    p->name = name;
-    p->process = process;
+    f->name = name;
+    f->create = create;
 
     return WSGI_OK;
 }
@@ -206,9 +206,10 @@ wsgi_http_config_server_runtime(
 {
     u_int n;
     wsgi_http_ctx_t *ctx;
+    wsgi_http_runtime_t *r;
+    wsgi_http_runtime_factory_t *f;
     wsgi_http_server_t *server;
     wsgi_list_t *servers;
-    wsgi_http_handler_t *h;
 
     wsgi_log_debug(c->log, WSGI_LOG_SOURCE_CONFIG,
                    "  runtime: %s",
@@ -217,16 +218,24 @@ wsgi_http_config_server_runtime(
     ctx = o->ctx;
     servers = &ctx->servers;
     server = wsgi_list_last_item(servers);
-    if (server->config.process != NULL) {
+    if (server->config.runtime != NULL) {
         wsgi_log_error(c->log, WSGI_LOG_SOURCE_CONFIG,
                        "duplicate `runtime` directive");
         return WSGI_ERROR;
     }
 
-    h = ctx->handlers.items;
-    for (n = ctx->handlers.length; n-- > 0; h++) {
-        if (strcasecmp((char *) o->value, h->name) == 0) {
-            server->config.process = h->process;
+    f = ctx->runtimes.items;
+    for (n = ctx->runtimes.length; n-- > 0; f++) {
+        if (strcasecmp((char *) o->value, f->name) == 0) {
+
+            r = f->create(ctx->cycle->gc);
+            if (r == NULL) {
+                return WSGI_ERROR;
+            }
+
+            assert(r->load && r->process && r->unload);
+            server->config.runtime = r;
+
             return WSGI_OK;
         }
     }
@@ -252,8 +261,8 @@ wsgi_http_module_create(wsgi_cycle_t *cycle)
         return NULL;
     }
 
-    if (wsgi_list_init(&ctx->handlers, cycle->gc, 2,
-                       sizeof(wsgi_http_handler_t)) != WSGI_OK) {
+    if (wsgi_list_init(&ctx->runtimes, cycle->gc, 2,
+                       sizeof(wsgi_http_runtime_factory_t)) != WSGI_OK) {
         return NULL;
     }
 
@@ -269,6 +278,7 @@ wsgi_http_module_init(void *self)
     wsgi_connection_t *c;
     wsgi_gc_t *gc;
     wsgi_http_ctx_t *ctx;
+    wsgi_http_runtime_t *runtime;
     wsgi_http_server_t *server;
     wsgi_pool_t *pool;
     wsgi_reactor_t *reactor;
@@ -305,12 +315,15 @@ wsgi_http_module_init(void *self)
     server = ctx->servers.items;
     for (n = ctx->servers.length; n-- > 0; server++) {
 
-        if (server->config.process == NULL) {
+        runtime = server->config.runtime;
+        if (runtime == NULL) {
             wsgi_log_error(ctx->cycle->log, WSGI_LOG_SOURCE_HTTP,
                            "server: %p, runtime required",
                            server);
             return WSGI_ERROR;
         }
+
+        runtime->load(runtime->self);
 
         if (server->config.request_header_buffer_size == 0) {
             server->config.request_header_buffer_size =
@@ -344,12 +357,17 @@ wsgi_http_module_shutdown(void *self)
     wsgi_acceptor_t *acceptor;
     wsgi_connection_t *c;
     wsgi_http_ctx_t *ctx;
+    wsgi_http_runtime_t *runtime;
     wsgi_http_server_t *server;
     wsgi_pool_t *pool;
 
     ctx = self;
     server = ctx->servers.items;
     for (n = ctx->servers.length; n-- > 0; server++) {
+
+        runtime = server->config.runtime;
+        runtime->unload(runtime->self);
+
         acceptor = server->acceptor;
         server->acceptor = NULL;
         if (wsgi_acceptor_close(acceptor) != WSGI_OK) {

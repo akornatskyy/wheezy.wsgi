@@ -263,8 +263,13 @@ done:
 static int
 wsgi_http_request_process(wsgi_http_request_t *r)
 {
+    wsgi_http_runtime_t *runtime;
+
     wsgi_log_debug(r->connection->gc->log, WSGI_LOG_SOURCE_HTTP,
                    "request: %p, processing",
                    r);
-    return wsgi_http_connection_config(r->connection)->process(r);
+
+    runtime = wsgi_http_connection_config(r->connection)->runtime;
+
+    return runtime->process(runtime->self, r);
 }
