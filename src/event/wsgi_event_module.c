@@ -37,7 +37,7 @@ static const wsgi_config_def_t config_defs[] = {
 };
 
 
-const wsgi_module_t event_module = {
+wsgi_module_t event_module = {
     "event", -1,
     config_defs,
     wsgi_event_module_create,
