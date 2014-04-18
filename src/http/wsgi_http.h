@@ -10,6 +10,8 @@ typedef struct wsgi_http_request_s wsgi_http_request_t;
 typedef struct wsgi_http_server_config_s wsgi_http_server_config_t;
 
 
+#define WSGI_CONFIG_DEF_SERVER 0x20
+
 #define WSGI_DEFAULT_REQUEST_HEADERS_CAPACITY 12
 #define WSGI_DEFAULT_REQUEST_HEADER_BUFFER_SIZE 1024
 #define WSGI_DEFAULT_WORKER_CONNECTIONS 16

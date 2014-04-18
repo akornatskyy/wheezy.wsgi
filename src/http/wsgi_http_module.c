@@ -2,9 +2,6 @@
 #include <wsgi_http.h>
 
 
-#define WSGI_CONFIG_DEF_SERVER 0x20
-
-
 static int wsgi_http_config_worker_connections(
         wsgi_config_t *c, wsgi_config_option_t *o);
 static int wsgi_http_config_server(
@@ -62,7 +59,7 @@ static const wsgi_config_def_t config_defs[] = {
 };
 
 
-const wsgi_module_t http_module = {
+wsgi_module_t http_module = {
     "http", -1,
     config_defs,
     wsgi_http_module_create,
@@ -209,15 +206,13 @@ wsgi_http_config_server_runtime(
     wsgi_http_runtime_t *r;
     wsgi_http_runtime_factory_t *f;
     wsgi_http_server_t *server;
-    wsgi_list_t *servers;
 
     wsgi_log_debug(c->log, WSGI_LOG_SOURCE_CONFIG,
                    "  runtime: %s",
                    o->value);
 
     ctx = o->ctx;
-    servers = &ctx->servers;
-    server = wsgi_list_last_item(servers);
+    server = wsgi_list_last_item(&ctx->servers);
     if (server->config.runtime != NULL) {
         wsgi_log_error(c->log, WSGI_LOG_SOURCE_CONFIG,
                        "duplicate `runtime` directive");
@@ -228,7 +223,7 @@ wsgi_http_config_server_runtime(
     for (n = ctx->runtimes.length; n-- > 0; f++) {
         if (strcasecmp((char *) o->value, f->name) == 0) {
 
-            r = f->create(ctx->cycle->gc);
+            r = f->create(ctx->cycle);
             if (r == NULL) {
                 return WSGI_ERROR;
             }
@@ -323,7 +318,12 @@ wsgi_http_module_init(void *self)
             return WSGI_ERROR;
         }
 
-        runtime->load(runtime->self);
+        if (runtime->load(runtime->self) != WSGI_OK) {
+            wsgi_log_error(ctx->cycle->log, WSGI_LOG_SOURCE_HTTP,
+                           "server: %p, unable to load runtime",
+                           server);
+            return WSGI_ERROR;
+        }
 
         if (server->config.request_header_buffer_size == 0) {
             server->config.request_header_buffer_size =

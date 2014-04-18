@@ -2,7 +2,8 @@
 #define WSGI_HTTP_MODULE_H
 
 
-typedef wsgi_http_runtime_t* (wsgi_http_runtime_create_pt)(wsgi_gc_t *gc);
+typedef wsgi_http_runtime_t*
+(wsgi_http_runtime_create_pt)(wsgi_cycle_t *cycle);
 
 struct wsgi_http_config_s {
     u_int                   worker_connections;

@@ -5,9 +5,11 @@ servers:
 - listen: unix:/tmp/sample.sock
   request_header_buffer_size: 768
   runtime: sample
+  sample_option: O1
   #application: my_site
   #script: test.app
   #environ:
   #  SCRIPT_NAME: ''
 - listen: 127.0.0.1:8080
   runtime: sample
+  sample_option: O2
